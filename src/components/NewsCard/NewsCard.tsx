@@ -5,13 +5,27 @@ import './NewsCard.css'
 
 interface NewsCardProps {
   article: FeedArticle
+  onOpen?: (article: FeedArticle) => void
 }
 
-export function NewsCard({ article }: NewsCardProps) {
+export function NewsCard({ article, onOpen }: NewsCardProps) {
   const style = { '--tag-color': article.categoryColor } as CSSProperties
 
   return (
-    <article className="news-card" style={style}>
+    <article
+      className="news-card"
+      style={style}
+      onClick={() => onOpen?.(article)}
+      role={onOpen ? 'button' : undefined}
+      tabIndex={onOpen ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (!onOpen) return
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onOpen(article)
+        }
+      }}
+    >
       <div className="news-card__meta">
         <span className="news-card__tag">
           <span className="news-card__dot" aria-hidden />
@@ -49,6 +63,7 @@ export function NewsCard({ article }: NewsCardProps) {
             type="button"
             className="news-card__icon-btn"
             aria-label="Remind me"
+            onClick={(e) => e.stopPropagation()}
           >
             <Bell size={20} strokeWidth={1.75} />
           </button>
@@ -56,6 +71,7 @@ export function NewsCard({ article }: NewsCardProps) {
             type="button"
             className="news-card__icon-btn"
             aria-label="Save article"
+            onClick={(e) => e.stopPropagation()}
           >
             <Bookmark size={20} strokeWidth={1.75} />
           </button>

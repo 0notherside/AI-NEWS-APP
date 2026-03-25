@@ -4,6 +4,12 @@
   background: var(--color-card);
   border-radius: var(--radius-card);
   border: 1px solid var(--color-border-subtle);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.news-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .news-card__meta {
