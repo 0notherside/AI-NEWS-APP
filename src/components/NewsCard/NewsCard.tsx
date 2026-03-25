@@ -23,8 +23,21 @@ export function NewsCard({ article }: NewsCardProps) {
           {article.timeAgo}
         </span>
       </div>
-      <h2 className="news-card__title">{article.title}</h2>
-      <p className="news-card__excerpt">{article.excerpt}</p>
+      <div className="news-card__main">
+        <div className="news-card__image-wrap">
+          <img
+            className="news-card__image"
+            src={article.imageUrl}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div className="news-card__copy">
+          <h2 className="news-card__title">{article.title}</h2>
+          <p className="news-card__excerpt">{article.excerpt}</p>
+        </div>
+      </div>
       <div className="news-card__footer">
         <p className="news-card__source">
           {article.source}
