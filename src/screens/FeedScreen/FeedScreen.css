@@ -1,0 +1,9 @@
+.feed-empty {
+  margin: 24px var(--space-page);
+  padding: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-card);
+  border: 1px dashed var(--color-border-subtle);
+}

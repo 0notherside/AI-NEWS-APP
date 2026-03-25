@@ -1,0 +1,24 @@
+:root {
+  --color-bg: #000000;
+  --color-card: #121212;
+  --color-chip-inactive: #1a1a1a;
+  --color-text: #ffffff;
+  --color-text-muted: #9ca3af;
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+
+  --accent-blue-start: #3b82f6;
+  --accent-blue-end: #2563eb;
+  --accent-glow: rgba(59, 130, 246, 0.45);
+
+  --category-editing: #a78bfa;
+  --category-music: #f472b6;
+  --category-voice: #34d399;
+
+  --avatar-gradient-start: #3b82f6;
+  --avatar-gradient-end: #7c3aed;
+
+  --radius-card: 16px;
+  --radius-chip: 999px;
+  --space-page: 16px;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}

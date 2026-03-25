@@ -1,0 +1,50 @@
+.category-chips {
+  display: flex;
+  gap: 10px;
+  padding: 8px var(--space-page) 16px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.category-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.category-chips__chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: var(--radius-chip);
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-text);
+  background: var(--color-chip-inactive);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.category-chips__chip:active {
+  transform: scale(0.98);
+}
+
+.category-chips__chip--active {
+  background: linear-gradient(
+    135deg,
+    var(--accent-blue-start) 0%,
+    var(--accent-blue-end) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(59, 130, 246, 0.3),
+    0 4px 20px var(--accent-glow);
+}
+
+.category-chips__emoji {
+  font-size: 15px;
+  line-height: 1;
+}
