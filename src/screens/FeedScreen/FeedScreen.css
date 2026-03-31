@@ -2,8 +2,14 @@
   margin: 24px var(--space-page);
   padding: 20px;
   text-align: center;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   color: var(--color-text-muted);
   border-radius: var(--radius-card);
   border: 1px dashed var(--color-border-subtle);
+}
+
+/* Card list spacing — cards use 1px bottom border as separator,
+   add top padding to clear the sticky header */
+.feed-card-list {
+  padding-top: 4px;
 }

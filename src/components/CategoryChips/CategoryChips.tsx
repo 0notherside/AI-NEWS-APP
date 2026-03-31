@@ -1,3 +1,4 @@
+import { Flame } from 'lucide-react'
 import { CATEGORY_CHIPS, type CategoryId } from '../../data/categories'
 import './CategoryChips.css'
 
@@ -23,6 +24,11 @@ export function CategoryChips({ active, onChange }: CategoryChipsProps) {
             }
             onClick={() => onChange(chip.id)}
           >
+            {chip.id === 'all' && (
+              <span className="category-chips__icon" aria-hidden>
+                <Flame size={12} strokeWidth={2.5} />
+              </span>
+            )}
             <span className="category-chips__emoji" aria-hidden>
               {chip.emoji}
             </span>

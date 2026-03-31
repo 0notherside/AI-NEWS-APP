@@ -1,71 +1,85 @@
 .news-card {
-  margin: 0 var(--space-page) 12px;
+  position: relative;          /* anchor for stretched-link ::after */
+  margin: 0 var(--space-page);
   padding: 16px;
   background: var(--color-card);
   border-radius: var(--radius-card);
   border: 1px solid var(--color-border-subtle);
-  cursor: pointer;
-  transition: border-color 0.15s ease;
+  border-bottom-color: var(--color-separator);
+  transition:
+    opacity 120ms ease-out,
+    transform 120ms ease-out,
+    border-color 120ms ease-out;
 }
 
-.news-card:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+/* Micro-interaction: card tap — JS class for broad browser support,
+   :has fallback for browsers that support it */
+.news-card--pressed,
+.news-card:has(.news-card__title-btn:active) {
+  transform: scale(0.98);
+  opacity: 0.9;
 }
 
+.news-card:has(.news-card__title-btn:hover) {
+  border-color: #3a3a3a;
+  border-bottom-color: var(--color-separator);
+}
+
+/* ── Category row (top) ──────────────────────────── */
 .news-card__meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .news-card__tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  gap: 4px;
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--tag-color, var(--color-text-muted));
 }
 
-.news-card__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--tag-color, var(--color-text-muted));
-  flex-shrink: 0;
+/* Dot and emoji removed from visual presentation */
+.news-card__dot,
+.news-card__tag-emoji {
+  display: none;
 }
 
 .news-card__time {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
-  color: var(--color-text-muted);
+  font-size: 0.75rem; /* 12px */
+  color: var(--color-text-meta);
+  font-weight: 500;
   flex-shrink: 0;
 }
 
 .news-card__time svg {
-  opacity: 0.85;
+  opacity: 0.7;
 }
 
+/* ── Thumbnail + copy ────────────────────────────── */
 .news-card__main {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .news-card__image-wrap {
   flex-shrink: 0;
-  width: 92px;
-  height: 92px;
-  border-radius: 12px;
+  width: 88px;
+  height: 88px;
+  border-radius: 10px;
   overflow: hidden;
-  background: var(--color-chip-inactive);
-  border: 1px solid var(--color-border-subtle);
+  background: var(--color-border-subtle);
 }
 
 .news-card__image {
@@ -80,19 +94,56 @@
   min-width: 0;
 }
 
+/* ── Heading + stretched link ────────────────────── */
 .news-card__title {
   margin: 0 0 6px;
-  font-size: 16px;
+  font-size: 1.0625rem; /* 17px */
   font-weight: 700;
-  line-height: 1.28;
-  letter-spacing: -0.02em;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
   color: var(--color-text);
+}
+
+.news-card__title-btn {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Stretched link — covers the whole card; action buttons sit above via z-index */
+.news-card__title-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-card);
+}
+
+.news-card__title-btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.news-card__title-btn:focus-visible::after {
+  display: none;
 }
 
 .news-card__excerpt {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  line-height: 1.5;
   color: var(--color-text-muted);
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -100,6 +151,7 @@
   overflow: hidden;
 }
 
+/* ── Footer: source + actions ────────────────────── */
 .news-card__footer {
   display: flex;
   align-items: center;
@@ -108,27 +160,89 @@
 }
 
 .news-card__source {
-  font-size: 13px;
-  color: var(--color-text-muted);
+  margin: 0;
+  font-size: 0.75rem; /* 12px */
+  font-weight: 500;
+  color: var(--color-text-meta);
 }
 
+/* Action buttons sit above the stretched link */
 .news-card__actions {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 0;
 }
 
 .news-card__icon-btn {
+  /* 44×44 touch target */
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+  display: grid;
+  place-items: center;
   padding: 0;
   border: none;
   background: none;
-  color: var(--color-text-muted);
+  color: var(--color-text-meta);
+  opacity: 0.6;
   cursor: pointer;
-  display: grid;
-  place-items: center;
-  line-height: 0;
+  border-radius: 10px;
+  transition: color 100ms ease-out, opacity 100ms ease-out;
 }
 
-.news-card__icon-btn:hover {
-  color: var(--color-text);
+.news-card__icon-btn:hover,
+.news-card__icon-btn:active {
+  color: #fff;
+  opacity: 1;
+}
+
+.news-card__icon-btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+/* ── Skeleton card ───────────────────────────────── */
+.news-card--skeleton {
+  pointer-events: none;
+}
+
+/* All skeleton elements share the shimmer animation */
+.news-card--skeleton .news-card__image-wrap,
+.news-card--skeleton .news-card__title,
+.news-card--skeleton .news-card__excerpt,
+.news-card--skeleton .news-card__source,
+.news-card--skeleton .news-card__tag,
+.news-card--skeleton .news-card__time {
+  border-radius: 6px;
+  color: transparent;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.09) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}
+
+/* Clamp title/excerpt widths so skeleton bars look natural */
+.news-card--skeleton .news-card__title {
+  max-width: 90%;
+}
+
+.news-card--skeleton .news-card__excerpt {
+  max-width: 100%;
+}
+
+.news-card--skeleton .news-card__source {
+  max-width: 50%;
+}
+
+.news-card--skeleton .news-card__tag {
+  max-width: 60px;
+}
+
+.news-card--skeleton .news-card__time {
+  max-width: 48px;
 }

@@ -34,7 +34,7 @@ export function BottomNav({ active, onChange }: BottomNavProps) {
               <span className="bottom-nav__indicator" />
             </div>
             <span className="bottom-nav__icon-slot">
-              <Icon size={22} strokeWidth={isActive ? 2.25 : 1.75} />
+              <Icon size={24} strokeWidth={1.5} />
             </span>
             {label}
           </button>

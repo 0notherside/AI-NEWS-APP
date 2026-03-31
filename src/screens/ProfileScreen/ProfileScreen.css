@@ -4,12 +4,14 @@
 
 .profile__title {
   margin: 0 0 20px;
-  font-size: 22px;
+  font-size: clamp(1.25rem, 5vw, 1.5rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--color-text);
+  line-height: var(--line-height-heading);
 }
 
+/* ── Hero ─────────────────────────────────────────── */
 .profile__hero {
   display: flex;
   flex-direction: column;
@@ -24,7 +26,7 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: #fff;
@@ -41,18 +43,20 @@
 
 .profile__name {
   margin: 0 0 6px;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--color-text);
+  line-height: var(--line-height-heading);
 }
 
 .profile__email {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }
 
+/* ── Stats (dl/dt/dd) ────────────────────────────── */
 .profile__stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -66,34 +70,41 @@
   border-radius: 14px;
   padding: 14px 10px;
   text-align: center;
+  display: flex;
+  flex-direction: column-reverse; /* value above label visually */
+  gap: 4px;
 }
 
 .profile__stat-value {
-  display: block;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--color-text);
-  margin-bottom: 4px;
+  /* dd reset */
+  margin: 0;
 }
 
 .profile__stat-label {
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  /* dt reset */
+  margin: 0;
 }
 
+/* ── Section labels → h2 ─────────────────────────── */
 .profile__section-label {
   margin: 0 0 10px 4px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
+/* ── Card wrapper ─────────────────────────────────── */
 .profile__card {
   background: var(--color-card);
   border: 1px solid var(--color-border-subtle);
@@ -102,62 +113,78 @@
   margin-bottom: 20px;
 }
 
+/* ── Interest chips ───────────────────────────────── */
 .profile__chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 14px 16px;
+  list-style: none;
+  margin: 0;
 }
 
 .profile__chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 7px 14px;
   border-radius: var(--radius-chip);
-  font-size: 13px;
+  font-size: 0.8125rem; /* 13px */
   font-weight: 600;
+  letter-spacing: 0.02em;
   color: var(--color-text);
-  background: var(--color-chip-inactive);
+  background: transparent;
   border: 1px solid var(--color-border-subtle);
 }
 
+/* Hide emojis from interest chips */
+.profile__chip-emoji {
+  display: none;
+}
+
 .profile__chip--editing {
-  border-color: rgba(167, 139, 250, 0.35);
-  background: rgba(167, 139, 250, 0.12);
+  border-color: rgba(167, 139, 250, 0.4);
+  background: rgba(167, 139, 250, 0.1);
+  color: #a78bfa;
 }
 
 .profile__chip--music {
-  border-color: rgba(244, 114, 182, 0.35);
-  background: rgba(244, 114, 182, 0.12);
+  border-color: rgba(244, 114, 182, 0.4);
+  background: rgba(244, 114, 182, 0.1);
+  color: #f472b6;
 }
 
 .profile__chip--voice {
-  border-color: rgba(52, 211, 153, 0.35);
-  background: rgba(52, 211, 153, 0.12);
+  border-color: rgba(52, 211, 153, 0.4);
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
 }
 
 .profile__chip--code {
-  border-color: rgba(59, 130, 246, 0.35);
-  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-blue-start);
 }
 
+/* ── Settings rows ────────────────────────────────── */
 .profile__row {
   width: 100%;
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px;
+  /* 44px minimum touch target */
+  min-height: var(--touch-target);
+  padding: 10px 16px;
   border: none;
   background: none;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--font-size-body);
   font-weight: 500;
   color: var(--color-text);
   text-align: left;
   cursor: pointer;
   border-bottom: 1px solid var(--color-border-subtle);
-  transition: background 0.15s ease;
+  transition: background 0.15s ease-out;
 }
 
 .profile__row:last-child {
@@ -165,11 +192,16 @@
 }
 
 .profile__row:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .profile__row:active {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.profile__row:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
 }
 
 .profile__row-icon {
@@ -204,20 +236,23 @@
 }
 
 .profile__row-meta {
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--color-text-muted);
   margin-right: 4px;
 }
 
+/* ── Sign out ─────────────────────────────────────── */
 .profile__signout {
   width: 100%;
   margin-top: 8px;
-  padding: 14px 16px;
+  /* 44px minimum touch target */
+  min-height: var(--touch-target);
+  padding: 0 16px;
   border-radius: var(--radius-card);
   border: 1px solid rgba(239, 68, 68, 0.35);
   background: rgba(239, 68, 68, 0.08);
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: #f87171;
   cursor: pointer;
@@ -226,8 +261,8 @@
   justify-content: center;
   gap: 8px;
   transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
+    background 0.15s ease-out,
+    border-color 0.15s ease-out;
 }
 
 .profile__signout:hover {
@@ -235,10 +270,21 @@
   border-color: rgba(239, 68, 68, 0.5);
 }
 
+.profile__signout:active {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(0.98);
+}
+
+.profile__signout:focus-visible {
+  outline: 2px solid #f87171;
+  outline-offset: var(--focus-offset);
+}
+
+/* ── Version ──────────────────────────────────────── */
 .profile__version {
   margin: 20px 0 0;
   text-align: center;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--color-text-muted);
   opacity: 0.85;
 }

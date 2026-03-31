@@ -73,47 +73,87 @@ export function SavedBoardsScreen() {
   }
 
   return (
-    <section className="saved-boards">
-      <div className="saved-boards__header">
+    <section className="saved-boards" aria-label="Saved boards">
+      <header className="saved-boards__header">
         <h1 className="saved-boards__title">Saved boards</h1>
         <p className="saved-boards__subtitle">
-          Organize AI news like Pinterest collections.
+          Organise AI news like Pinterest collections.
         </p>
-      </div>
+      </header>
 
-      <form className="saved-boards__create" onSubmit={onCreate}>
+      {/* Create board form */}
+      <form
+        className="saved-boards__create"
+        onSubmit={onCreate}
+        aria-label="Create a new board"
+      >
+        <label htmlFor="new-board-name" className="sr-only">
+          Board name
+        </label>
         <input
+          id="new-board-name"
           className="saved-boards__input"
           type="text"
           value={newBoard}
           onChange={(e) => setNewBoard(e.target.value)}
           placeholder="Create a board (e.g. AI Agents)"
-          aria-label="Create board"
+          aria-label="Board name"
         />
-        <button type="submit" className="saved-boards__create-btn">
-          <Plus size={16} strokeWidth={2.5} />
+        <button
+          type="submit"
+          className="saved-boards__create-btn"
+          aria-label="Create new board"
+        >
+          <Plus size={16} strokeWidth={2.5} aria-hidden />
           New
         </button>
       </form>
 
-      <div className="saved-boards__grid">
+      {/* Boards grid */}
+      <div
+        className="saved-boards__grid"
+        role="list"
+        aria-label="Your boards"
+        aria-live="polite"
+        aria-atomic="false"
+      >
         {boards.map((board) => (
-          <article key={board.id} className="saved-boards__card">
-            <div className="saved-boards__mosaic">
+          <article
+            key={board.id}
+            className="saved-boards__card"
+            role="listitem"
+            aria-label={`${board.name} board, ${board.count} saves`}
+          >
+            <div className="saved-boards__mosaic" aria-hidden>
               {board.covers.length === 0 ? (
                 <div className="saved-boards__empty-cover">No pins yet</div>
               ) : (
                 <>
-                  <img src={board.covers[0]} alt="" className="saved-boards__cover-main" />
+                  {/* PERF FLAG: cover images missing width/height attrs */}
+                  <img
+                    src={board.covers[0]}
+                    alt=""
+                    className="saved-boards__cover-main"
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <div className="saved-boards__cover-stack">
                     {board.covers.slice(1, 3).map((cover, i) => (
-                      <img key={`${board.id}-${i}`} src={cover} alt="" className="saved-boards__cover-side" />
+                      <img
+                        key={`${board.id}-${i}`}
+                        src={cover}
+                        alt=""
+                        className="saved-boards__cover-side"
+                        loading="lazy"
+                        decoding="async"
+                      />
                     ))}
                   </div>
                 </>
               )}
             </div>
             <div className="saved-boards__meta">
+              {/* TODO: make board name a link/button once board detail view exists */}
               <h2 className="saved-boards__name">{board.name}</h2>
               <p className="saved-boards__info">
                 {board.count} saves · {board.updated}

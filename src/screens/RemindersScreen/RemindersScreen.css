@@ -4,12 +4,14 @@
 
 .reminders__title {
   margin: 0 0 20px;
-  font-size: 22px;
+  font-size: clamp(1.25rem, 5vw, 1.5rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--color-text);
+  line-height: var(--line-height-heading);
 }
 
+/* ── Month navigation ────────────────────────────── */
 .reminders__month {
   display: flex;
   align-items: center;
@@ -19,15 +21,16 @@
 }
 
 .reminders__month-label {
-  font-size: 16px;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: var(--color-text);
   letter-spacing: -0.02em;
 }
 
 .reminders__nav-btn {
-  width: 40px;
-  height: 40px;
+  /* 44×44 touch target */
+  width: var(--touch-target);
+  height: var(--touch-target);
   border-radius: 12px;
   border: 1px solid var(--color-border-subtle);
   background: var(--color-card);
@@ -36,15 +39,25 @@
   place-items: center;
   cursor: pointer;
   transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
+    background 0.15s ease-out,
+    border-color 0.15s ease-out;
 }
 
 .reminders__nav-btn:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: #161616;
+  border-color: rgba(255, 255, 255, 0.14);
+  background: var(--color-card);
 }
 
+.reminders__nav-btn:active {
+  transform: scale(0.94);
+}
+
+.reminders__nav-btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+/* ── Weekday headers ──────────────────────────────── */
 .reminders__weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -54,13 +67,14 @@
 }
 
 .reminders__weekday {
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--color-text-muted);
   padding: 4px 0;
 }
 
+/* ── Calendar grid ────────────────────────────────── */
 .reminders__grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -70,13 +84,14 @@
 
 .reminders__day {
   aspect-ratio: 1;
-  max-height: 44px;
+  /* 44px minimum touch target */
+  min-height: var(--touch-target);
   border: none;
   border-radius: 10px;
   background: transparent;
   color: var(--color-text-muted);
   font-family: inherit;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
   display: flex;
@@ -86,13 +101,22 @@
   gap: 2px;
   padding: 0;
   transition:
-    background 0.12s ease,
-    color 0.12s ease;
+    background 0.12s ease-out,
+    color 0.12s ease-out;
 }
 
 .reminders__day:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--color-text);
+}
+
+.reminders__day:active {
+  transform: scale(0.92);
+}
+
+.reminders__day:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
 }
 
 .reminders__day--muted {
@@ -138,9 +162,10 @@
   background: #fff;
 }
 
+/* ── Section labels ───────────────────────────────── */
 .reminders__section-label {
   margin: 0 0 10px 4px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -149,11 +174,12 @@
 
 .reminders__selected-date {
   margin: 0 0 14px;
-  font-size: 15px;
+  font-size: var(--font-size-body);
   font-weight: 500;
   color: var(--color-text);
 }
 
+/* ── Add reminder form ────────────────────────────── */
 .reminders__form {
   background: var(--color-card);
   border: 1px solid var(--color-border-subtle);
@@ -172,7 +198,7 @@
 
 .reminders__label {
   display: block;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   color: var(--color-text-muted);
   margin-bottom: 6px;
@@ -192,15 +218,17 @@
   background: var(--color-bg);
   color: var(--color-text);
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--font-size-body);
   padding: 10px 12px;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease-out;
 }
 
 .reminders__input:focus,
 .reminders__textarea:focus {
-  border-color: rgba(59, 130, 246, 0.45);
+  border-color: var(--accent-blue-start);
+  /* ring around the input — WCAG 3:1 component contrast */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 
 .reminders__textarea {
@@ -209,18 +237,19 @@
 }
 
 .reminders__input--time {
-  /* native time picker */
-  min-height: 44px;
+  min-height: var(--touch-target);
 }
 
 .reminders__submit {
   width: 100%;
   margin-top: 16px;
-  padding: 12px 16px;
+  /* 44px min touch target */
+  min-height: var(--touch-target);
+  padding: 0 16px;
   border: none;
   border-radius: 12px;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: #fff;
   cursor: pointer;
@@ -229,7 +258,7 @@
     var(--accent-blue-start) 0%,
     var(--accent-blue-end) 100%
   );
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease-out;
 }
 
 .reminders__submit:hover {
@@ -237,13 +266,22 @@
 }
 
 .reminders__submit:active {
-  opacity: 0.85;
+  opacity: 0.8;
+  transform: scale(0.98);
 }
 
+.reminders__submit:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+/* ── Reminder list ────────────────────────────────── */
 .reminders__list {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding: 0;
+  margin: 0;
 }
 
 .reminders__item {
@@ -257,7 +295,7 @@
 }
 
 .reminders__item-time {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--accent-blue-start);
@@ -272,7 +310,7 @@
 
 .reminders__item-topic {
   margin: 0 0 6px;
-  font-size: 15px;
+  font-size: var(--font-size-body);
   font-weight: 600;
   line-height: 1.35;
   color: var(--color-text);
@@ -281,7 +319,7 @@
 .reminders__item-link {
   display: block;
   margin: 0 0 8px;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   line-height: 1.4;
   color: var(--accent-blue-start);
   text-decoration: none;
@@ -292,10 +330,16 @@
   text-decoration: underline;
 }
 
+.reminders__item-link:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+  border-radius: 3px;
+}
+
 .reminders__item-desc {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
   color: var(--color-text);
 }
 
@@ -306,18 +350,19 @@
 
 .reminders__item-remove {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+  /* 44×44 touch target */
+  width: var(--touch-target);
+  height: var(--touch-target);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.06);
   color: var(--color-text-muted);
   cursor: pointer;
   display: grid;
   place-items: center;
   transition:
-    background 0.15s ease,
-    color 0.15s ease;
+    background 0.15s ease-out,
+    color 0.15s ease-out;
 }
 
 .reminders__item-remove:hover {
@@ -325,11 +370,20 @@
   color: #f87171;
 }
 
+.reminders__item-remove:active {
+  transform: scale(0.9);
+}
+
+.reminders__item-remove:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
 .reminders__empty {
   margin: 0;
   padding: 20px;
   text-align: center;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   color: var(--color-text-muted);
   border: 1px dashed var(--color-border-subtle);
   border-radius: var(--radius-card);

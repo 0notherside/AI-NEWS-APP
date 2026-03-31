@@ -1,23 +1,31 @@
 @import './theme.css';
 
+/* ── Reset ─────────────────────────────────────────── */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
+/* ── Base ──────────────────────────────────────────── */
 html {
+  font-size: 100%; /* keeps rem = 16px */
   -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   min-height: 100dvh;
   font-family: var(--font-sans);
-  background: #0a0a0a;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  background: #111111;
   color: var(--color-text);
+  /* PERF FLAG: font loaded via <link> in index.html with display=swap — OK */
 }
 
+/* ── Root shell ────────────────────────────────────── */
 #root {
   min-height: 100dvh;
   display: flex;
@@ -36,15 +44,103 @@ body {
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
+/* ── Scrollable content area ───────────────────────── */
 .app-scroll {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 88px;
+  /* 68px = nav content height (8px top-pad + ~44px items + 8px bottom-pad + 8px buffer)
+     env() adds the OS safe-area so content clears the nav on notch/Dynamic-Island devices */
+  padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
   -webkit-overflow-scrolling: touch;
 }
 
 .app-scroll::-webkit-scrollbar {
   width: 0;
   height: 0;
+}
+
+/* ── Skip-to-main link (WCAG 2.4.1) ───────────────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--space-page);
+  z-index: 9999;
+  padding: 10px 16px;
+  background: var(--accent-blue-start);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ── Global focus ring ─────────────────────────────── */
+:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+  border-radius: 4px;
+}
+
+/* ── Screen-reader only utility ────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ── Pull-to-refresh zone ──────────────────────────── */
+.pull-to-refresh {
+  height: 4px;               /* visual affordance slot */
+  flex-shrink: 0;
+}
+
+/* ── Skeleton shimmer ──────────────────────────────── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-card) 25%,
+    rgba(255, 255, 255, 0.06) 50%,
+    var(--color-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+  border-radius: 6px;
+}
+
+/* ── Reduced-motion override ───────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Wider breakpoints (768px +) ───────────────────── */
+@media (min-width: 768px) {
+  .app-shell {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.06),
+      0 24px 80px rgba(0, 0, 0, 0.6);
+  }
 }

@@ -13,6 +13,8 @@ export interface FeedArticle {
   excerpt: string
   source: string
   readMinutes: number
+  /** When true, rendered as a full-width hero card at the top of the All feed */
+  featured?: boolean
   details: {
     summary: string
     whatsNew: string
@@ -30,6 +32,7 @@ export const FEED_ARTICLES: FeedArticle[] = [
     categoryEmoji: '✂️',
     categoryColor: 'var(--category-editing)',
     timeAgo: '2h ago',
+    featured: true,
     imageUrl:
       'https://images.unsplash.com/photo-1516035069371-29a1b244ccff?auto=format&fit=crop&w=640&h=400&q=80',
     title: 'OpenAI Announces Sora Is Closing for Public Preview Access',
