@@ -7,6 +7,7 @@ import { NewsCard } from '../../components/NewsCard/NewsCard'
 import { SearchBar } from '../../components/SearchBar/SearchBar'
 import type { CategoryId } from '../../data/categories'
 import type { FeedArticle } from '../../data/feed'
+import { useProfile } from '../../hooks/useProfile'
 import { useReminders } from '../../hooks/useReminders'
 import { useSavedNews } from '../../hooks/useSavedNews'
 import { newsService } from '../../services/newsService'
@@ -28,6 +29,7 @@ export function FeedScreen() {
   const [feed, setFeed] = useState<FeedArticle[]>([])
   const [loading, setLoading] = useState(true)
 
+  const { profile, updateName, updateAvatar } = useProfile()
   const { savedIds, isSaved, toggleSaved } = useSavedNews(feed)
   const { reminders, addReminder, removeReminder, hasArticleReminder } = useReminders()
 
@@ -85,7 +87,11 @@ export function FeedScreen() {
 
       {tab === 'feed' && (
         <>
-          <Header onProfileClick={() => setTab('profile')} />
+          <Header
+            onProfileClick={() => setTab('profile')}
+            userName={profile.name}
+            avatarDataUrl={profile.avatarDataUrl}
+          />
           {/* Pull-to-refresh affordance zone */}
           <div
             className="pull-to-refresh"
@@ -189,7 +195,15 @@ export function FeedScreen() {
             removeReminder={removeReminder}
           />
         )}
-        {tab === 'profile' && <ProfileScreen />}
+        {tab === 'profile' && (
+          <ProfileScreen
+            profile={profile}
+            onUpdateName={updateName}
+            onUpdateAvatar={updateAvatar}
+            savedCount={savedIds.length}
+            reminderCount={reminders.length}
+          />
+        )}
       </main>
 
       <BottomNav

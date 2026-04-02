@@ -20,6 +20,13 @@
   padding: 8px 0 24px;
 }
 
+/* Avatar wrapper — positions the camera + remove badges */
+.profile__avatar-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+
 .profile__avatar {
   width: 96px;
   height: 96px;
@@ -38,16 +45,173 @@
   box-shadow:
     0 0 0 4px rgba(59, 130, 246, 0.15),
     0 12px 40px rgba(59, 130, 246, 0.2);
-  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.profile__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+}
+
+/* Camera badge — bottom-right of avatar */
+.profile__avatar-edit {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--color-bg);
+  background: var(--accent-blue-start);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.profile__avatar-edit:hover {
+  background: var(--accent-blue-end);
+}
+
+.profile__avatar-edit:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* Remove photo badge — top-right of avatar */
+.profile__avatar-remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--color-bg);
+  background: rgba(239, 68, 68, 0.85);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.profile__avatar-remove:hover {
+  background: #ef4444;
+}
+
+.profile__avatar-remove:focus-visible {
+  outline: 2px solid #f87171;
+  outline-offset: 2px;
+}
+
+.profile__file-input {
+  display: none;
+}
+
+/* Inline name row: name + pencil */
+.profile__name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 
 .profile__name {
-  margin: 0 0 6px;
+  margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--color-text);
   line-height: var(--line-height-heading);
+}
+
+.profile__name-pencil {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.profile__name-pencil:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-text);
+}
+
+.profile__name-pencil:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+/* Inline name edit row */
+.profile__name-edit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.profile__name-input {
+  flex: 1;
+  min-width: 0;
+  max-width: 220px;
+  padding: 6px 10px;
+  border: 1px solid var(--accent-blue-start);
+  border-radius: 10px;
+  background: var(--color-card);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.profile__name-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 120ms ease;
+}
+
+.profile__name-btn--save {
+  background: rgba(52, 211, 153, 0.2);
+  color: #34d399;
+}
+
+.profile__name-btn--save:hover {
+  background: rgba(52, 211, 153, 0.35);
+}
+
+.profile__name-btn--cancel {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--color-text-muted);
+}
+
+.profile__name-btn--cancel:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.profile__name-btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
 }
 
 .profile__email {

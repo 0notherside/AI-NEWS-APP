@@ -1,10 +1,13 @@
+import { getInitials } from '../../hooks/useProfile'
 import './Header.css'
 
 interface HeaderProps {
   onProfileClick?: () => void
+  userName?: string
+  avatarDataUrl?: string | null
 }
 
-export function Header({ onProfileClick }: HeaderProps) {
+export function Header({ onProfileClick, userName = 'AI Pulse', avatarDataUrl }: HeaderProps) {
   return (
     <header className="header">
       <h1 className="header__title">AI Pulse</h1>
@@ -14,7 +17,11 @@ export function Header({ onProfileClick }: HeaderProps) {
         aria-label="Open profile"
         onClick={onProfileClick}
       >
-        AI
+        {avatarDataUrl ? (
+          <img className="header__avatar-img" src={avatarDataUrl} alt={userName} />
+        ) : (
+          getInitials(userName)
+        )}
       </button>
     </header>
   )
