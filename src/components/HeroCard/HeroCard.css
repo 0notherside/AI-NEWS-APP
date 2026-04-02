@@ -42,27 +42,6 @@
   padding: 16px;
 }
 
-.hero-card__save {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.45);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  z-index: 2;
-}
-
-.hero-card__save--active {
-  color: var(--accent-blue-start);
-  border-color: rgba(59, 130, 246, 0.7);
-}
-
 /* ── Category tag: top-left badge ────────────────── */
 .hero-card__tag {
   display: inline-block;
@@ -118,10 +97,58 @@
   display: none;
 }
 
-/* ── Source · read time ──────────────────────────── */
+/* ── Footer: source + actions ────────────────────── */
+.hero-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .hero-card__meta {
   margin: 0;
   font-size: 0.75rem; /* 12px */
   font-weight: 500;
   color: rgba(255, 255, 255, 0.55);
+}
+
+/* Action buttons sit above the stretched link */
+.hero-card__actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.hero-card__icon-btn {
+  /* 44×44 touch target */
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.6);
+  opacity: 0.8;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: color 100ms ease-out, opacity 100ms ease-out;
+}
+
+.hero-card__icon-btn:hover,
+.hero-card__icon-btn:active {
+  color: #fff;
+  opacity: 1;
+}
+
+.hero-card__icon-btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+.hero-card__icon-btn--active {
+  color: var(--accent-blue-start);
+  opacity: 1;
 }

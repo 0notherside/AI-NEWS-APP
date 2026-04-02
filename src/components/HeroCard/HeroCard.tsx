@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { Bookmark } from 'lucide-react'
+import { Bell, Bookmark, Share2 } from 'lucide-react'
 import type { FeedArticle } from '../../data/feed'
 import './HeroCard.css'
 
@@ -35,15 +35,6 @@ export function HeroCard({
       <div className="hero-card__overlay" aria-hidden />
 
       <div className="hero-card__content">
-        <button
-          type="button"
-          className={`hero-card__save${isSaved ? ' hero-card__save--active' : ''}`}
-          aria-label={isSaved ? 'Remove from saved' : 'Save article'}
-          aria-pressed={isSaved}
-          onClick={() => onToggleSave?.(article)}
-        >
-          <Bookmark size={18} strokeWidth={1.8} />
-        </button>
         <span className="hero-card__tag">{article.categoryLabel}</span>
         <h2 className="hero-card__title">
           {onOpen ? (
@@ -58,11 +49,43 @@ export function HeroCard({
             article.title
           )}
         </h2>
-        <p className="hero-card__meta">
-          {article.source}
-          <span aria-hidden> · </span>
-          {article.readMinutes} min read
-        </p>
+        <div className="hero-card__footer">
+          <p className="hero-card__meta">
+            {article.source}
+            <span aria-hidden> · </span>
+            {article.readMinutes} min read
+          </p>
+          <div className="hero-card__actions" role="group" aria-label="Article actions">
+            <button
+              type="button"
+              className="hero-card__icon-btn"
+              aria-label="Set reminder for this article"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Bell size={20} strokeWidth={1.5} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className={`hero-card__icon-btn${isSaved ? ' hero-card__icon-btn--active' : ''}`}
+              aria-label={isSaved ? 'Remove from saved' : 'Save article'}
+              aria-pressed={isSaved}
+              onClick={(e) => {
+                e.stopPropagation()
+                onToggleSave?.(article)
+              }}
+            >
+              <Bookmark size={20} strokeWidth={1.5} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="hero-card__icon-btn"
+              aria-label="Share article"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Share2 size={20} strokeWidth={1.5} aria-hidden />
+            </button>
+          </div>
+        </div>
       </div>
     </article>
   )
