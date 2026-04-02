@@ -93,10 +93,11 @@ export function RemindersScreen({
 
   const todayKey = localDateKey(today)
 
-  const datesWithReminder = useMemo(() => {
-    const s = new Set<string>()
-    for (const r of reminders) s.add(r.dateKey)
-    return s
+  /** Map of dateKey → reminder count for that day (capped display at 3) */
+  const reminderCountByDate = useMemo(() => {
+    const m = new Map<string, number>()
+    for (const r of reminders) m.set(r.dateKey, (m.get(r.dateKey) ?? 0) + 1)
+    return m
   }, [reminders])
 
   const dayReminders = useMemo(() => {
@@ -185,14 +186,14 @@ export function RemindersScreen({
           const dateKey = localDateKeyFromParts(cursorYear, cursorMonth, day)
           const isToday = dateKey === todayKey
           const isSelected = dateKey === selectedKey
-          const hasDot = datesWithReminder.has(dateKey)
+          const dotCount = reminderCountByDate.get(dateKey) ?? 0
           return (
             <button
               key={dateKey}
               type="button"
               role="gridcell"
               aria-selected={isSelected}
-              aria-label={`${day}${isToday ? ', today' : ''}${hasDot ? ', has reminders' : ''}`}
+              aria-label={`${day}${isToday ? ', today' : ''}${dotCount > 0 ? `, ${dotCount} reminder${dotCount > 1 ? 's' : ''}` : ''}`}
               className={
                 'reminders__day' +
                 (isToday ? ' reminders__day--today' : '') +
@@ -201,11 +202,13 @@ export function RemindersScreen({
               onClick={() => setSelectedKey(dateKey)}
             >
               <span aria-hidden>{day}</span>
-              {hasDot ? (
-                <span className="reminders__day-dot" aria-hidden />
-              ) : (
-                <span className="reminders__day-spacer" aria-hidden />
-              )}
+              <span className="reminders__day-dots" aria-hidden>
+                {dotCount > 0
+                  ? Array.from({ length: Math.min(dotCount, 3) }, (_, i) => (
+                      <span key={i} className="reminders__day-dot" />
+                    ))
+                  : <span className="reminders__day-spacer" />}
+              </span>
             </button>
           )
         })}

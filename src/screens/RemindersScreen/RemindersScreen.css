@@ -143,6 +143,15 @@
   box-shadow: none;
 }
 
+.reminders__day-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 6px;
+  flex-shrink: 0;
+}
+
 .reminders__day-spacer {
   width: 4px;
   height: 4px;
@@ -160,6 +169,7 @@
 
 .reminders__day--selected .reminders__day-dot {
   background: #fff;
+  opacity: 1;
 }
 
 /* ── Section labels ───────────────────────────────── */
