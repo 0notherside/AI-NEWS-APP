@@ -4,6 +4,7 @@ import { CategoryChips } from '../../components/CategoryChips/CategoryChips'
 import { Header } from '../../components/Header/Header'
 import { HeroCard } from '../../components/HeroCard/HeroCard'
 import { NewsCard } from '../../components/NewsCard/NewsCard'
+import { SearchBar } from '../../components/SearchBar/SearchBar'
 import type { CategoryId } from '../../data/categories'
 import type { FeedArticle } from '../../data/feed'
 import { useSavedNews } from '../../hooks/useSavedNews'
@@ -20,6 +21,7 @@ const SKELETON_COUNT = 3
 export function FeedScreen() {
   const [tab, setTab] = useState<NavTabId>('feed')
   const [category, setCategory] = useState<CategoryId>('all')
+  const [searchQuery, setSearchQuery] = useState('')
   const [selectedArticle, setSelectedArticle] = useState<FeedArticle | null>(null)
   const [feed, setFeed] = useState<FeedArticle[]>([])
   const [loading, setLoading] = useState(true)
@@ -51,14 +53,25 @@ export function FeedScreen() {
     [category, feed],
   )
 
-  /* Regular card list excludes the featured article to avoid duplication */
+  /* Regular card list: category filter → search filter → exclude featured */
   const articles = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase()
     const base =
       category === 'all'
         ? feed
         : feed.filter((a) => a.categoryId === category)
-    return featuredArticle ? base.filter((a) => a.id !== featuredArticle.id) : base
-  }, [category, featuredArticle, feed])
+    const searched = query
+      ? base.filter(
+          (a) =>
+            a.title.toLowerCase().includes(query) ||
+            a.excerpt.toLowerCase().includes(query) ||
+            a.source.toLowerCase().includes(query),
+        )
+      : base
+    return featuredArticle && !query
+      ? searched.filter((a) => a.id !== featuredArticle.id)
+      : searched
+  }, [category, featuredArticle, feed, searchQuery])
 
   return (
     <div className="app-shell">
@@ -81,9 +94,11 @@ export function FeedScreen() {
             active={category}
             onChange={(id) => {
               setCategory(id)
+              setSearchQuery('')
               setSelectedArticle(null)
             }}
           />
+          <SearchBar value={searchQuery} onChange={setSearchQuery} />
         </>
       )}
 
@@ -128,7 +143,7 @@ export function FeedScreen() {
           ) : (
             /* ── Live feed ────────────────────────────── */
             <>
-              {featuredArticle && (
+              {featuredArticle && !searchQuery && (
                 <HeroCard
                   article={featuredArticle}
                   onOpen={(a) => setSelectedArticle(a)}
@@ -137,7 +152,11 @@ export function FeedScreen() {
                 />
               )}
               {articles.length === 0 ? (
-                <p className="feed-empty">No stories in this category yet.</p>
+                <p className="feed-empty">
+                  {searchQuery
+                    ? `No stories matching "${searchQuery}".`
+                    : 'No stories in this category yet.'}
+                </p>
               ) : (
                 articles.map((article) => (
                   <NewsCard
