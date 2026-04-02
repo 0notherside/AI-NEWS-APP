@@ -72,18 +72,21 @@ export function RemindersScreen({
   const [pendingArticleId, setPendingArticleId] = useState<string | null>(null)
 
   const formRef = useRef<HTMLFormElement>(null)
+  const titleRef = useRef<HTMLInputElement>(null)
 
   const feedById = useMemo(() => new Map(feed.map((a) => [a.id, a])), [feed])
 
-  /* Pre-fill form when arriving from a Bell button tap */
+  /* Pre-fill title and scroll form into view when arriving from a Bell tap */
   useEffect(() => {
     if (!prefillArticle) return
     setTopic(prefillArticle.title)
     setLink('')
     setDescription('')
     setPendingArticleId(prefillArticle.id)
-    // Scroll form into view after render
-    setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80)
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      titleRef.current?.focus()
+    }, 80)
   }, [prefillArticle])
 
   const cells = useMemo(
@@ -93,18 +96,19 @@ export function RemindersScreen({
 
   const todayKey = localDateKey(today)
 
-  /** Map of dateKey → reminder count for that day (capped display at 3) */
   const reminderCountByDate = useMemo(() => {
     const m = new Map<string, number>()
     for (const r of reminders) m.set(r.dateKey, (m.get(r.dateKey) ?? 0) + 1)
     return m
   }, [reminders])
 
-  const dayReminders = useMemo(() => {
-    return reminders
-      .filter((r) => r.dateKey === selectedKey)
-      .sort((x, y) => sortByTime(x.time, y.time))
-  }, [reminders, selectedKey])
+  const dayReminders = useMemo(
+    () =>
+      reminders
+        .filter((r) => r.dateKey === selectedKey)
+        .sort((x, y) => sortByTime(x.time, y.time)),
+    [reminders, selectedKey],
+  )
 
   const goMonth = (delta: number) => {
     const d = new Date(cursorYear, cursorMonth + delta, 1)
@@ -130,109 +134,37 @@ export function RemindersScreen({
   }
 
   const selectedLabel = formatSelectedLabel(selectedKey)
+  const linkedArticle = pendingArticleId ? feedById.get(pendingArticleId) : undefined
 
   return (
     <div className="reminders">
       <h1 className="reminders__title">Reminders</h1>
 
-      {/* ── Month navigation ──────────────────────────── */}
-      <div className="reminders__month" role="group" aria-label="Navigate months">
-        <button
-          type="button"
-          className="reminders__nav-btn"
-          aria-label="Previous month"
-          onClick={() => goMonth(-1)}
-        >
-          <ChevronLeft size={20} strokeWidth={2} aria-hidden />
-        </button>
-        <span className="reminders__month-label" aria-live="polite" aria-atomic="true">
-          {formatMonthYear(cursorYear, cursorMonth)}
-        </span>
-        <button
-          type="button"
-          className="reminders__nav-btn"
-          aria-label="Next month"
-          onClick={() => goMonth(1)}
-        >
-          <ChevronRight size={20} strokeWidth={2} aria-hidden />
-        </button>
-      </div>
-
-      {/* ── Weekday headers ───────────────────────────── */}
-      <div className="reminders__weekdays" aria-hidden>
-        {WEEKDAYS.map((w, i) => (
-          <div key={i} className="reminders__weekday">
-            {w}
-          </div>
-        ))}
-      </div>
-
-      {/* ── Calendar grid ─────────────────────────────── */}
-      <div
-        className="reminders__grid"
-        role="grid"
-        aria-label={`Calendar for ${formatMonthYear(cursorYear, cursorMonth)}`}
+      {/* ── Add reminder form card ─────────────────────── */}
+      <form
+        ref={formRef}
+        className="reminders__form"
+        onSubmit={handleAdd}
+        aria-label="Add a reminder"
       >
-        {cells.map((day, i) => {
-          if (day === null) {
-            return (
-              <div
-                key={`empty-${i}`}
-                className="reminders__day reminders__day--muted"
-                aria-hidden
-              />
-            )
-          }
-          const dateKey = localDateKeyFromParts(cursorYear, cursorMonth, day)
-          const isToday = dateKey === todayKey
-          const isSelected = dateKey === selectedKey
-          const dotCount = reminderCountByDate.get(dateKey) ?? 0
-          return (
-            <button
-              key={dateKey}
-              type="button"
-              role="gridcell"
-              aria-selected={isSelected}
-              aria-label={`${day}${isToday ? ', today' : ''}${dotCount > 0 ? `, ${dotCount} reminder${dotCount > 1 ? 's' : ''}` : ''}`}
-              className={
-                'reminders__day' +
-                (isToday ? ' reminders__day--today' : '') +
-                (isSelected ? ' reminders__day--selected' : '')
-              }
-              onClick={() => setSelectedKey(dateKey)}
-            >
-              <span aria-hidden>{day}</span>
-              <span className="reminders__day-dots" aria-hidden>
-                {dotCount > 0
-                  ? Array.from({ length: Math.min(dotCount, 3) }, (_, i) => (
-                      <span key={i} className="reminders__day-dot" />
-                    ))
-                  : <span className="reminders__day-spacer" />}
-              </span>
-            </button>
-          )
-        })}
-      </div>
-
-      {/* ── Add reminder form ─────────────────────────── */}
-      <p className="reminders__section-label" aria-hidden>Add reminder</p>
-      <p className="reminders__selected-date">{selectedLabel}</p>
-
-      {/* Article preview strip when pre-filling from a card */}
-      {pendingArticleId && feedById.has(pendingArticleId) && (() => {
-        const a = feedById.get(pendingArticleId)!
-        return (
+        {/* 1 ── Article strip (auto-filled from feed) ──── */}
+        {linkedArticle && (
           <div className="reminders__prefill-article">
             <img
               className="reminders__prefill-thumb"
-              src={a.imageUrl}
+              src={linkedArticle.imageUrl}
               alt=""
               loading="lazy"
               decoding="async"
             />
             <div className="reminders__prefill-copy">
-              <span className="reminders__prefill-label">From article</span>
-              <p className="reminders__prefill-title">{a.title}</p>
+              <span
+                className="reminders__prefill-category"
+                style={{ color: linkedArticle.categoryColor }}
+              >
+                {linkedArticle.categoryLabel}
+              </span>
+              <p className="reminders__prefill-source">{linkedArticle.source}</p>
             </div>
             <button
               type="button"
@@ -243,29 +175,125 @@ export function RemindersScreen({
               <X size={14} strokeWidth={2.5} aria-hidden />
             </button>
           </div>
-        )
-      })()}
+        )}
 
-      <form
-        ref={formRef}
-        className="reminders__form"
-        onSubmit={handleAdd}
-        aria-label={`Add reminder for ${selectedLabel}`}
-      >
+        {/* Title field — auto-filled, always first */}
         <div className="reminders__field">
-          <label className="reminders__label" htmlFor="reminder-time">
-            Time
+          <label className="reminders__label" htmlFor="reminder-topic">
+            News title or topic
           </label>
           <input
-            id="reminder-time"
-            className="reminders__input reminders__input--time"
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            required
-            aria-required="true"
+            ref={titleRef}
+            id="reminder-topic"
+            className="reminders__input reminders__input--title"
+            type="text"
+            placeholder="e.g. Suno v5 mobile release…"
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
           />
         </div>
+
+        <div className="reminders__form-divider" aria-hidden />
+
+        {/* 2 ── Date (calendar) ─────────────────────────── */}
+        <div className="reminders__form-section-label" aria-hidden>Date &amp; time</div>
+
+        <div className="reminders__month" role="group" aria-label="Navigate months">
+          <button
+            type="button"
+            className="reminders__nav-btn"
+            aria-label="Previous month"
+            onClick={() => goMonth(-1)}
+          >
+            <ChevronLeft size={20} strokeWidth={2} aria-hidden />
+          </button>
+          <span className="reminders__month-label" aria-live="polite" aria-atomic="true">
+            {formatMonthYear(cursorYear, cursorMonth)}
+          </span>
+          <button
+            type="button"
+            className="reminders__nav-btn"
+            aria-label="Next month"
+            onClick={() => goMonth(1)}
+          >
+            <ChevronRight size={20} strokeWidth={2} aria-hidden />
+          </button>
+        </div>
+
+        <div className="reminders__weekdays" aria-hidden>
+          {WEEKDAYS.map((w, i) => (
+            <div key={i} className="reminders__weekday">{w}</div>
+          ))}
+        </div>
+
+        <div
+          className="reminders__grid"
+          role="grid"
+          aria-label={`Calendar for ${formatMonthYear(cursorYear, cursorMonth)}`}
+        >
+          {cells.map((day, i) => {
+            if (day === null) {
+              return (
+                <div
+                  key={`empty-${i}`}
+                  className="reminders__day reminders__day--muted"
+                  aria-hidden
+                />
+              )
+            }
+            const dateKey = localDateKeyFromParts(cursorYear, cursorMonth, day)
+            const isToday = dateKey === todayKey
+            const isSelected = dateKey === selectedKey
+            const dotCount = reminderCountByDate.get(dateKey) ?? 0
+            return (
+              <button
+                key={dateKey}
+                type="button"
+                role="gridcell"
+                aria-selected={isSelected}
+                aria-label={`${day}${isToday ? ', today' : ''}${dotCount > 0 ? `, ${dotCount} reminder${dotCount > 1 ? 's' : ''}` : ''}`}
+                className={
+                  'reminders__day' +
+                  (isToday ? ' reminders__day--today' : '') +
+                  (isSelected ? ' reminders__day--selected' : '')
+                }
+                onClick={() => setSelectedKey(dateKey)}
+              >
+                <span aria-hidden>{day}</span>
+                <span className="reminders__day-dots" aria-hidden>
+                  {dotCount > 0
+                    ? Array.from({ length: Math.min(dotCount, 3) }, (_, idx) => (
+                        <span key={idx} className="reminders__day-dot" />
+                      ))
+                    : <span className="reminders__day-spacer" />}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Date + time row ─────────────────────────────── */}
+        <div className="reminders__datetime-row">
+          <p className="reminders__selected-date" aria-live="polite" aria-atomic="true">
+            {selectedLabel}
+          </p>
+          <div className="reminders__field reminders__field--time">
+            <label className="reminders__label" htmlFor="reminder-time">Time</label>
+            <input
+              id="reminder-time"
+              className="reminders__input reminders__input--time"
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              required
+              aria-required="true"
+            />
+          </div>
+        </div>
+
+        <div className="reminders__form-divider" aria-hidden />
+
+        {/* 3 ── Link (optional) ─────────────────────────── */}
         <div className="reminders__field">
           <label className="reminders__label" htmlFor="reminder-link">
             Link <span className="reminders__label-optional">(optional)</span>
@@ -281,33 +309,24 @@ export function RemindersScreen({
             onChange={(e) => setLink(e.target.value)}
           />
         </div>
-        <div className="reminders__field">
-          <label className="reminders__label" htmlFor="reminder-topic">
-            AI news or topic{' '}
-            <span className="reminders__label-optional">(optional)</span>
-          </label>
-          <input
-            id="reminder-topic"
-            className="reminders__input"
-            type="text"
-            placeholder="e.g. Suno v5, Firefly 4, voice APIs"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-          />
-        </div>
+
+        <div className="reminders__form-divider" aria-hidden />
+
+        {/* 4 ── Description (optional) ──────────────────── */}
         <div className="reminders__field">
           <label className="reminders__label" htmlFor="reminder-desc">
-            Description <span className="reminders__label-optional">(optional)</span>
+            Your thoughts <span className="reminders__label-optional">(optional)</span>
           </label>
           <textarea
             id="reminder-desc"
             className="reminders__textarea"
-            placeholder="Extra notes for this reminder"
+            placeholder="Add your own notes about this story…"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
           />
         </div>
+
         <button type="submit" className="reminders__submit">
           Add reminder
         </button>
@@ -316,41 +335,42 @@ export function RemindersScreen({
       {/* ── Reminder list ─────────────────────────────── */}
       <p className="reminders__section-label" aria-hidden>Scheduled for this day</p>
 
-      {/* aria-live announces adds/removals to screen readers */}
       <div aria-live="polite" aria-atomic="false">
         {dayReminders.length === 0 ? (
           <p className="reminders__empty">No reminders on this date.</p>
         ) : (
-          <ul className="reminders__list" role="list" aria-label={`Reminders for ${selectedLabel}`}>
+          <ul
+            className="reminders__list"
+            role="list"
+            aria-label={`Reminders for ${selectedLabel}`}
+          >
             {dayReminders.map((r) => {
-              const linkedArticle = r.articleId ? feedById.get(r.articleId) : undefined
+              const article = r.articleId ? feedById.get(r.articleId) : undefined
               return (
                 <li key={r.id} className="reminders__item">
                   <time className="reminders__item-time" aria-label={`Time: ${r.time}`}>
                     {r.time}
                   </time>
                   <div className="reminders__item-body">
-                    {linkedArticle && (
+                    {article && (
                       <div className="reminders__item-article">
                         <img
                           className="reminders__item-article-thumb"
-                          src={linkedArticle.imageUrl}
+                          src={article.imageUrl}
                           alt=""
                           loading="lazy"
                           decoding="async"
                         />
                         <span
                           className="reminders__item-article-source"
-                          style={{ color: linkedArticle.categoryColor }}
+                          style={{ color: article.categoryColor }}
                         >
-                          {linkedArticle.categoryLabel}
+                          {article.categoryLabel}
                         </span>
                       </div>
                     )}
-                    {r.topic ? (
-                      <p className="reminders__item-topic">{r.topic}</p>
-                    ) : null}
-                    {r.link ? (
+                    {r.topic && <p className="reminders__item-topic">{r.topic}</p>}
+                    {r.link && (
                       <a
                         className="reminders__item-link"
                         href={linkHref(r.link)}
@@ -359,15 +379,15 @@ export function RemindersScreen({
                       >
                         {r.link}
                       </a>
-                    ) : null}
-                    {r.description ? (
+                    )}
+                    {r.description && (
                       <p className="reminders__item-desc">{r.description}</p>
-                    ) : null}
-                    {!r.topic && !r.link && !r.description ? (
+                    )}
+                    {!r.topic && !r.link && !r.description && (
                       <p className="reminders__item-desc reminders__item-desc--empty">
                         No details yet
                       </p>
-                    ) : null}
+                    )}
                   </div>
                   {removeReminder && (
                     <button

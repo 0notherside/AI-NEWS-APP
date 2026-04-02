@@ -16,8 +16,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
-  padding: 0 2px;
+  margin-bottom: 12px;
+  padding: 0;
 }
 
 .reminders__month-label {
@@ -33,7 +33,7 @@
   height: var(--touch-target);
   border-radius: 12px;
   border: 1px solid var(--color-border-subtle);
-  background: var(--color-card);
+  background: var(--color-bg);
   color: var(--color-text);
   display: grid;
   place-items: center;
@@ -45,7 +45,7 @@
 
 .reminders__nav-btn:hover {
   border-color: rgba(255, 255, 255, 0.14);
-  background: var(--color-card);
+  background: var(--color-bg);
 }
 
 .reminders__nav-btn:active {
@@ -79,7 +79,7 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .reminders__day {
@@ -182,21 +182,14 @@
   color: var(--color-text-muted);
 }
 
-.reminders__selected-date {
-  margin: 0 0 14px;
-  font-size: var(--font-size-body);
-  font-weight: 500;
-  color: var(--color-text);
-}
-
 /* ── Article prefill strip ────────────────────────── */
 .reminders__prefill-article {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  margin-bottom: 12px;
-  background: var(--color-card);
+  margin-bottom: 16px;
+  background: var(--color-bg);
   border: 1px solid var(--color-border-subtle);
   border-radius: 12px;
 }
@@ -214,21 +207,20 @@
   min-width: 0;
 }
 
-.reminders__prefill-label {
+.reminders__prefill-category {
   display: block;
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-blue-start);
   margin-bottom: 2px;
 }
 
-.reminders__prefill-title {
+.reminders__prefill-source {
   margin: 0;
   font-size: var(--font-size-sm);
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--color-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -260,6 +252,54 @@
   border-radius: var(--radius-card);
   padding: 16px;
   margin-bottom: 24px;
+}
+
+/* Horizontal divider between form sections */
+.reminders__form-divider {
+  height: 1px;
+  background: var(--color-border-subtle);
+  margin: 16px 0;
+}
+
+/* In-form section label (e.g. "Date & time") */
+.reminders__form-section-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 0 12px;
+}
+
+/* Title input — larger and more prominent than regular inputs */
+.reminders__input--title {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 12px 14px;
+}
+
+/* Date + time row below the calendar */
+.reminders__datetime-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.reminders__selected-date {
+  flex: 1;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  padding-bottom: 11px; /* align baseline with time input */
+}
+
+/* Time field inside the datetime row */
+.reminders__field--time {
+  flex-shrink: 0;
+  width: 130px;
+  margin-bottom: 0;
 }
 
 .reminders__field {
