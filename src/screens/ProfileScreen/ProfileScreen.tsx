@@ -7,7 +7,6 @@ import {
   HelpCircle,
   LogOut,
   Mail,
-  Palette,
   Pencil,
   Shield,
   Sparkles,
@@ -15,6 +14,7 @@ import {
 } from 'lucide-react'
 import type { Profile } from '../../hooks/useProfile'
 import { getInitials } from '../../hooks/useProfile'
+import type { Theme } from '../../hooks/useTheme'
 import './ProfileScreen.css'
 
 const INTERESTS: { label: string; emoji: string; variant: string }[] = [
@@ -30,6 +30,8 @@ interface ProfileScreenProps {
   onUpdateAvatar: (dataUrl: string | null) => void
   savedCount?: number
   reminderCount?: number
+  theme?: Theme
+  onSetTheme?: (t: Theme) => void
 }
 
 export function ProfileScreen({
@@ -38,6 +40,8 @@ export function ProfileScreen({
   onUpdateAvatar,
   savedCount = 0,
   reminderCount = 0,
+  theme = 'dark',
+  onSetTheme,
 }: ProfileScreenProps) {
   const [editingName, setEditingName] = useState(false)
   const [draftName, setDraftName] = useState(profile.name)
@@ -237,14 +241,31 @@ export function ProfileScreen({
           <span className="profile__row-meta" aria-label="Currently: On">On</span>
           <ChevronRight className="profile__row-chevron" size={20} aria-hidden />
         </button>
-        <button type="button" className="profile__row">
-          <span className="profile__row-icon profile__row-icon--violet" aria-hidden>
-            <Palette size={18} strokeWidth={2} />
-          </span>
+        <div className="profile__row profile__row--appearance">
           <span className="profile__row-label">Appearance</span>
-          <span className="profile__row-meta" aria-label="Currently: Dark">Dark</span>
-          <ChevronRight className="profile__row-chevron" size={20} aria-hidden />
-        </button>
+          <div className="profile__theme-toggle" role="group" aria-label="Choose appearance">
+            <button
+              type="button"
+              className={`profile__theme-btn${theme === 'dark' ? ' profile__theme-btn--active' : ''}`}
+              aria-pressed={theme === 'dark'}
+              onClick={() => onSetTheme?.('dark')}
+            >
+              <span className="profile__theme-swatch profile__theme-swatch--dark" aria-hidden />
+              Dark
+              {theme === 'dark' && <Check size={12} strokeWidth={3} aria-hidden />}
+            </button>
+            <button
+              type="button"
+              className={`profile__theme-btn${theme === 'light' ? ' profile__theme-btn--active' : ''}`}
+              aria-pressed={theme === 'light'}
+              onClick={() => onSetTheme?.('light')}
+            >
+              <span className="profile__theme-swatch profile__theme-swatch--light" aria-hidden />
+              Light
+              {theme === 'light' && <Check size={12} strokeWidth={3} aria-hidden />}
+            </button>
+          </div>
+        </div>
         <button type="button" className="profile__row">
           <span className="profile__row-icon profile__row-icon--muted" aria-hidden>
             <Shield size={18} strokeWidth={2} />

@@ -405,6 +405,75 @@
   margin-right: 4px;
 }
 
+/* ── Appearance / theme picker ────────────────────── */
+.profile__row--appearance {
+  cursor: default;
+  flex-wrap: wrap;
+  gap: 10px;
+  /* override button reset since this is a div */
+  display: flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.profile__theme-toggle {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.profile__theme-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-chip);
+  border: 1px solid var(--color-chip-border);
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
+}
+
+.profile__theme-btn:hover {
+  border-color: var(--color-text-muted);
+  color: var(--color-text);
+}
+
+.profile__theme-btn--active {
+  border-color: var(--accent-blue-start);
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-blue-start);
+  font-weight: 600;
+}
+
+.profile__theme-btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+/* Small colour swatch inside each button */
+.profile__theme-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.profile__theme-swatch--dark {
+  background: linear-gradient(135deg, #1a1a1a 50%, #111111 50%);
+}
+
+.profile__theme-swatch--light {
+  background: linear-gradient(135deg, #ffffff 50%, #faf8f5 50%);
+}
+
 /* ── Sign out ─────────────────────────────────────── */
 .profile__signout {
   width: 100%;

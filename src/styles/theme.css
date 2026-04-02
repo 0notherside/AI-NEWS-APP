@@ -26,6 +26,12 @@
   --category-voice: #34d399;
   --category-code: #60a5fa;
 
+  /* ── Surface tokens (used by nav + header) ────────── */
+  --color-nav-bg: #0f0f0f;
+  --color-nav-border: #1f1f1f;
+  --color-header-bg: rgba(17, 17, 17, 0.88);
+  --color-outer-bg: #111111;
+
   /* ── Avatar gradient ──────────────────────────────── */
   --avatar-gradient-start: #3b82f6;
   --avatar-gradient-end: #7c3aed;
@@ -51,4 +57,27 @@
 
   /* ── Touch target ─────────────────────────────────── */
   --touch-target: 44px;
+}
+
+/* ── Light / cream theme ───────────────────────────── */
+[data-theme="light"] {
+  --color-bg: #faf8f5;
+  --color-card: #ffffff;
+  --color-chip-inactive: transparent;
+
+  --color-text: #111111;
+  --color-text-body: #374151;
+  --color-text-muted: #6b7280;
+  --color-text-meta: #9ca3af;
+
+  --color-border-subtle: #e8e3dc;
+  --color-separator: #f0ece6;
+  --color-chip-border: #c9c3ba;
+
+  --color-nav-bg: #f5f2ee;
+  --color-nav-border: #e8e3dc;
+  --color-header-bg: rgba(250, 248, 245, 0.92);
+  --color-outer-bg: #ede9e3;
+
+  --accent-glow: rgba(59, 130, 246, 0.25);
 }

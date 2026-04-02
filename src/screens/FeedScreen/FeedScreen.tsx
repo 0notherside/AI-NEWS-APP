@@ -10,6 +10,7 @@ import type { FeedArticle } from '../../data/feed'
 import { useProfile } from '../../hooks/useProfile'
 import { useReminders } from '../../hooks/useReminders'
 import { useSavedNews } from '../../hooks/useSavedNews'
+import { useTheme } from '../../hooks/useTheme'
 import { newsService } from '../../services/newsService'
 import type { NavTabId } from '../../types/nav'
 import { ArticleDetailsScreen } from '../ArticleDetailsScreen/ArticleDetailsScreen'
@@ -29,6 +30,7 @@ export function FeedScreen() {
   const [feed, setFeed] = useState<FeedArticle[]>([])
   const [loading, setLoading] = useState(true)
 
+  const { theme, setTheme } = useTheme()
   const { profile, updateName, updateAvatar } = useProfile()
   const { savedIds, isSaved, toggleSaved } = useSavedNews(feed)
   const { reminders, addReminder, removeReminder, hasArticleReminder } = useReminders()
@@ -202,6 +204,8 @@ export function FeedScreen() {
             onUpdateAvatar={updateAvatar}
             savedCount={savedIds.length}
             reminderCount={reminders.length}
+            theme={theme}
+            onSetTheme={setTheme}
           />
         )}
       </main>
