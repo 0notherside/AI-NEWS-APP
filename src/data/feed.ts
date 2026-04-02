@@ -69,7 +69,7 @@ export const FEED_ARTICLES: FeedArticle[] = [
     timeAgo: '4h ago',
     imageUrl:
       'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=320&h=200&fit=crop&q=80',
-    title: 'Suno v5 Brings Studio-Quality AI Music Generation to Mobile',
+    title: 'Suno v5 Delivers Studio-Quality AI Music on Mobile',
     excerpt:
       'The popular AI music platform now runs completely on-device for iOS users, enabling offline creation with unprecedented audio fidelity...',
     source: 'TechCrunch',
@@ -103,7 +103,7 @@ export const FEED_ARTICLES: FeedArticle[] = [
     timeAgo: '6h ago',
     imageUrl:
       'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=320&h=200&fit=crop&q=80',
-    title: 'ElevenLabs Launches Real-Time Voice Translation with Emotion Preservation',
+    title: 'ElevenLabs Adds Real-Time Voice Translation',
     excerpt:
       'Breaking language barriers while maintaining tonal nuance, the new API supports 29 languages with sub-100ms latency for live conversations...',
     source: 'Wired',
