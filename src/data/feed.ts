@@ -34,7 +34,7 @@ export const FEED_ARTICLES: FeedArticle[] = [
     timeAgo: '2h ago',
     featured: true,
     imageUrl:
-      'https://images.unsplash.com/photo-1516035069371-29a1b244ccff?auto=format&fit=crop&w=640&h=400&q=80',
+      'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=640&h=400&q=80',
     title: 'OpenAI Announces Sora Is Closing for Public Preview Access',
     excerpt:
       'OpenAI says it will sunset the current public Sora preview, guiding creators to export projects and follow upcoming details on the next release phase...',
@@ -55,8 +55,8 @@ export const FEED_ARTICLES: FeedArticle[] = [
         'No final tiers announced yet for the next Sora release.',
       ],
       screenshots: [
-        'https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=1200&h=700&q=80',
-        'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1200&h=700&q=80',
+        'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=1200&h=700&q=80',
+        'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1200&h=700&q=80',
       ],
     },
   },
