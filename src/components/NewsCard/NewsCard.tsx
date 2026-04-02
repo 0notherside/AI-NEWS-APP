@@ -7,9 +7,17 @@ interface NewsCardProps {
   article?: FeedArticle
   onOpen?: (article: FeedArticle) => void
   skeleton?: boolean
+  isSaved?: boolean
+  onToggleSave?: (article: FeedArticle) => void
 }
 
-export function NewsCard({ article, onOpen, skeleton }: NewsCardProps) {
+export function NewsCard({
+  article,
+  onOpen,
+  skeleton,
+  isSaved,
+  onToggleSave,
+}: NewsCardProps) {
   const [pressed, setPressed] = useState(false)
 
   /* ── Skeleton placeholder ──────────────────────── */
@@ -114,9 +122,13 @@ export function NewsCard({ article, onOpen, skeleton }: NewsCardProps) {
           </button>
           <button
             type="button"
-            className="news-card__icon-btn"
-            aria-label="Save article"
-            onClick={(e) => e.stopPropagation()}
+            className={`news-card__icon-btn${isSaved ? ' news-card__icon-btn--active' : ''}`}
+            aria-label={isSaved ? 'Remove from saved' : 'Save article'}
+            aria-pressed={isSaved}
+            onClick={(e) => {
+              e.stopPropagation()
+              onToggleSave?.(article)
+            }}
           >
             <Bookmark size={20} strokeWidth={1.5} aria-hidden />
           </button>

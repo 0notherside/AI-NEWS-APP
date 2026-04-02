@@ -5,7 +5,9 @@ import { Header } from '../../components/Header/Header'
 import { HeroCard } from '../../components/HeroCard/HeroCard'
 import { NewsCard } from '../../components/NewsCard/NewsCard'
 import type { CategoryId } from '../../data/categories'
-import { FEED_ARTICLES, type FeedArticle } from '../../data/feed'
+import type { FeedArticle } from '../../data/feed'
+import { useSavedNews } from '../../hooks/useSavedNews'
+import { newsService } from '../../services/newsService'
 import type { NavTabId } from '../../types/nav'
 import { ArticleDetailsScreen } from '../ArticleDetailsScreen/ArticleDetailsScreen'
 import { ProfileScreen } from '../ProfileScreen/ProfileScreen'
@@ -19,28 +21,44 @@ export function FeedScreen() {
   const [tab, setTab] = useState<NavTabId>('feed')
   const [category, setCategory] = useState<CategoryId>('all')
   const [selectedArticle, setSelectedArticle] = useState<FeedArticle | null>(null)
+  const [feed, setFeed] = useState<FeedArticle[]>([])
   const [loading, setLoading] = useState(true)
 
-  /* Simulate network fetch — replace with real async call when data is live */
+  const { savedIds, isSaved, toggleSaved } = useSavedNews(feed)
+
+  /* Backend-ready: feed is loaded through a service abstraction. */
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1200)
-    return () => clearTimeout(t)
+    let mounted = true
+    setLoading(true)
+    newsService
+      .getFeed()
+      .then((items) => {
+        if (!mounted) return
+        setFeed(items)
+      })
+      .finally(() => {
+        if (!mounted) return
+        setLoading(false)
+      })
+    return () => {
+      mounted = false
+    }
   }, [])
 
   /* Featured article is only surfaced in the All feed */
   const featuredArticle = useMemo(
-    () => (category === 'all' ? (FEED_ARTICLES.find((a) => a.featured) ?? null) : null),
-    [category],
+    () => (category === 'all' ? (feed.find((a) => a.featured) ?? null) : null),
+    [category, feed],
   )
 
   /* Regular card list excludes the featured article to avoid duplication */
   const articles = useMemo(() => {
     const base =
       category === 'all'
-        ? FEED_ARTICLES
-        : FEED_ARTICLES.filter((a) => a.categoryId === category)
+        ? feed
+        : feed.filter((a) => a.categoryId === category)
     return featuredArticle ? base.filter((a) => a.id !== featuredArticle.id) : base
-  }, [category, featuredArticle])
+  }, [category, featuredArticle, feed])
 
   return (
     <div className="app-shell">
@@ -114,6 +132,8 @@ export function FeedScreen() {
                 <HeroCard
                   article={featuredArticle}
                   onOpen={(a) => setSelectedArticle(a)}
+                  isSaved={isSaved(featuredArticle.id)}
+                  onToggleSave={(a) => toggleSaved(a.id)}
                 />
               )}
               {articles.length === 0 ? (
@@ -124,13 +144,15 @@ export function FeedScreen() {
                     key={article.id}
                     article={article}
                     onOpen={(a) => setSelectedArticle(a)}
+                    isSaved={isSaved(article.id)}
+                    onToggleSave={(a) => toggleSaved(a.id)}
                   />
                 ))
               )}
             </>
           ))}
 
-        {tab === 'saved' && <SavedBoardsScreen />}
+        {tab === 'saved' && <SavedBoardsScreen feed={feed} savedArticleIds={savedIds} />}
         {tab === 'reminders' && <RemindersScreen />}
         {tab === 'profile' && <ProfileScreen />}
       </main>

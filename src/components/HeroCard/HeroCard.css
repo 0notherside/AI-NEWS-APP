@@ -42,6 +42,27 @@
   padding: 16px;
 }
 
+.hero-card__save {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.hero-card__save--active {
+  color: var(--accent-blue-start);
+  border-color: rgba(59, 130, 246, 0.7);
+}
+
 /* ── Category tag: top-left badge ────────────────── */
 .hero-card__tag {
   display: inline-block;
