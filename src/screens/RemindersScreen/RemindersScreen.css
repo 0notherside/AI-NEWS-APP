@@ -179,6 +179,70 @@
   color: var(--color-text);
 }
 
+/* ── Article prefill strip ────────────────────────── */
+.reminders__prefill-article {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: var(--color-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 12px;
+}
+
+.reminders__prefill-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.reminders__prefill-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.reminders__prefill-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-blue-start);
+  margin-bottom: 2px;
+}
+
+.reminders__prefill-title {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reminders__prefill-clear {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 100ms ease, color 100ms ease;
+}
+
+.reminders__prefill-clear:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
 /* ── Add reminder form ────────────────────────────── */
 .reminders__form {
   background: var(--color-card);
@@ -292,6 +356,29 @@
   background: var(--color-card);
   border: 1px solid var(--color-border-subtle);
   border-radius: 14px;
+}
+
+/* Article thumbnail row inside a reminder item */
+.reminders__item-article {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.reminders__item-article-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.reminders__item-article-source {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .reminders__item-time {

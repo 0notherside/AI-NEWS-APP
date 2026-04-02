@@ -9,6 +9,8 @@ interface NewsCardProps {
   skeleton?: boolean
   isSaved?: boolean
   onToggleSave?: (article: FeedArticle) => void
+  isReminded?: boolean
+  onSetReminder?: (article: FeedArticle) => void
 }
 
 export function NewsCard({
@@ -17,6 +19,8 @@ export function NewsCard({
   skeleton,
   isSaved,
   onToggleSave,
+  isReminded,
+  onSetReminder,
 }: NewsCardProps) {
   const [pressed, setPressed] = useState(false)
 
@@ -114,9 +118,13 @@ export function NewsCard({
         <div className="news-card__actions" role="group" aria-label="Article actions">
           <button
             type="button"
-            className="news-card__icon-btn"
-            aria-label="Set reminder for this article"
-            onClick={(e) => e.stopPropagation()}
+            className={`news-card__icon-btn${isReminded ? ' news-card__icon-btn--active' : ''}`}
+            aria-label={isReminded ? 'Reminder set' : 'Set reminder for this article'}
+            aria-pressed={isReminded}
+            onClick={(e) => {
+              e.stopPropagation()
+              onSetReminder?.(article)
+            }}
           >
             <Bell size={20} strokeWidth={1.5} aria-hidden />
           </button>

@@ -24,6 +24,7 @@ function normalizeReminder(raw: unknown): Reminder | null {
     link: asString(o.link),
     topic: asString(o.topic),
     description: asString(o.description),
+    articleId: typeof o.articleId === 'string' ? o.articleId : undefined,
   }
 }
 
@@ -66,5 +67,10 @@ export function useReminders() {
     setReminders((prev) => prev.filter((r) => r.id !== id))
   }, [])
 
-  return { reminders, addReminder, removeReminder }
+  const hasArticleReminder = useCallback(
+    (articleId: string) => reminders.some((r) => r.articleId === articleId),
+    [reminders],
+  )
+
+  return { reminders, addReminder, removeReminder, hasArticleReminder }
 }

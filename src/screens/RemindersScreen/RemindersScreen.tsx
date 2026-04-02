@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
-import { useReminders } from '../../hooks/useReminders'
+import type { FeedArticle } from '../../data/feed'
+import type { Reminder } from '../../types/reminder'
 import {
   formatMonthYear,
   localDateKey,
@@ -43,7 +44,23 @@ function linkHref(raw: string): string {
   return `https://${t}`
 }
 
-export function RemindersScreen() {
+interface RemindersScreenProps {
+  feed?: FeedArticle[]
+  prefillArticle?: FeedArticle | null
+  onPrefillConsumed?: () => void
+  reminders: Reminder[]
+  addReminder: (input: Omit<Reminder, 'id'>) => void
+  removeReminder?: (id: string) => void
+}
+
+export function RemindersScreen({
+  feed = [],
+  prefillArticle,
+  onPrefillConsumed,
+  reminders,
+  addReminder,
+  removeReminder,
+}: RemindersScreenProps) {
   const today = new Date()
   const [cursorYear, setCursorYear] = useState(today.getFullYear())
   const [cursorMonth, setCursorMonth] = useState(today.getMonth())
@@ -52,8 +69,22 @@ export function RemindersScreen() {
   const [link, setLink] = useState('')
   const [topic, setTopic] = useState('')
   const [description, setDescription] = useState('')
+  const [pendingArticleId, setPendingArticleId] = useState<string | null>(null)
 
-  const { reminders, addReminder, removeReminder } = useReminders()
+  const formRef = useRef<HTMLFormElement>(null)
+
+  const feedById = useMemo(() => new Map(feed.map((a) => [a.id, a])), [feed])
+
+  /* Pre-fill form when arriving from a Bell button tap */
+  useEffect(() => {
+    if (!prefillArticle) return
+    setTopic(prefillArticle.title)
+    setLink('')
+    setDescription('')
+    setPendingArticleId(prefillArticle.id)
+    // Scroll form into view after render
+    setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80)
+  }, [prefillArticle])
 
   const cells = useMemo(
     () => buildMonthCells(cursorYear, cursorMonth),
@@ -88,10 +119,13 @@ export function RemindersScreen() {
       link: link.trim(),
       topic: topic.trim(),
       description: description.trim(),
+      articleId: pendingArticleId ?? undefined,
     })
     setLink('')
     setTopic('')
     setDescription('')
+    setPendingArticleId(null)
+    onPrefillConsumed?.()
   }
 
   const selectedLabel = formatSelectedLabel(selectedKey)
@@ -181,7 +215,36 @@ export function RemindersScreen() {
       <p className="reminders__section-label" aria-hidden>Add reminder</p>
       <p className="reminders__selected-date">{selectedLabel}</p>
 
+      {/* Article preview strip when pre-filling from a card */}
+      {pendingArticleId && feedById.has(pendingArticleId) && (() => {
+        const a = feedById.get(pendingArticleId)!
+        return (
+          <div className="reminders__prefill-article">
+            <img
+              className="reminders__prefill-thumb"
+              src={a.imageUrl}
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="reminders__prefill-copy">
+              <span className="reminders__prefill-label">From article</span>
+              <p className="reminders__prefill-title">{a.title}</p>
+            </div>
+            <button
+              type="button"
+              className="reminders__prefill-clear"
+              aria-label="Remove article link"
+              onClick={() => { setPendingArticleId(null); onPrefillConsumed?.() }}
+            >
+              <X size={14} strokeWidth={2.5} aria-hidden />
+            </button>
+          </div>
+        )
+      })()}
+
       <form
+        ref={formRef}
         className="reminders__form"
         onSubmit={handleAdd}
         aria-label={`Add reminder for ${selectedLabel}`}
@@ -256,44 +319,66 @@ export function RemindersScreen() {
           <p className="reminders__empty">No reminders on this date.</p>
         ) : (
           <ul className="reminders__list" role="list" aria-label={`Reminders for ${selectedLabel}`}>
-            {dayReminders.map((r) => (
-              <li key={r.id} className="reminders__item">
-                <time className="reminders__item-time" aria-label={`Time: ${r.time}`}>
-                  {r.time}
-                </time>
-                <div className="reminders__item-body">
-                  {r.topic ? (
-                    <p className="reminders__item-topic">{r.topic}</p>
-                  ) : null}
-                  {r.link ? (
-                    <a
-                      className="reminders__item-link"
-                      href={linkHref(r.link)}
-                      target="_blank"
-                      rel="noopener noreferrer"
+            {dayReminders.map((r) => {
+              const linkedArticle = r.articleId ? feedById.get(r.articleId) : undefined
+              return (
+                <li key={r.id} className="reminders__item">
+                  <time className="reminders__item-time" aria-label={`Time: ${r.time}`}>
+                    {r.time}
+                  </time>
+                  <div className="reminders__item-body">
+                    {linkedArticle && (
+                      <div className="reminders__item-article">
+                        <img
+                          className="reminders__item-article-thumb"
+                          src={linkedArticle.imageUrl}
+                          alt=""
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <span
+                          className="reminders__item-article-source"
+                          style={{ color: linkedArticle.categoryColor }}
+                        >
+                          {linkedArticle.categoryLabel}
+                        </span>
+                      </div>
+                    )}
+                    {r.topic ? (
+                      <p className="reminders__item-topic">{r.topic}</p>
+                    ) : null}
+                    {r.link ? (
+                      <a
+                        className="reminders__item-link"
+                        href={linkHref(r.link)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {r.link}
+                      </a>
+                    ) : null}
+                    {r.description ? (
+                      <p className="reminders__item-desc">{r.description}</p>
+                    ) : null}
+                    {!r.topic && !r.link && !r.description ? (
+                      <p className="reminders__item-desc reminders__item-desc--empty">
+                        No details yet
+                      </p>
+                    ) : null}
+                  </div>
+                  {removeReminder && (
+                    <button
+                      type="button"
+                      className="reminders__item-remove"
+                      aria-label={`Remove reminder at ${r.time}${r.topic ? ` for ${r.topic}` : ''}`}
+                      onClick={() => removeReminder(r.id)}
                     >
-                      {r.link}
-                    </a>
-                  ) : null}
-                  {r.description ? (
-                    <p className="reminders__item-desc">{r.description}</p>
-                  ) : null}
-                  {!r.topic && !r.link && !r.description ? (
-                    <p className="reminders__item-desc reminders__item-desc--empty">
-                      No details yet
-                    </p>
-                  ) : null}
-                </div>
-                <button
-                  type="button"
-                  className="reminders__item-remove"
-                  aria-label={`Remove reminder at ${r.time}${r.topic ? ` for ${r.topic}` : ''}`}
-                  onClick={() => removeReminder(r.id)}
-                >
-                  <X size={18} strokeWidth={2} aria-hidden />
-                </button>
-              </li>
-            ))}
+                      <X size={18} strokeWidth={2} aria-hidden />
+                    </button>
+                  )}
+                </li>
+              )
+            })}
           </ul>
         )}
       </div>

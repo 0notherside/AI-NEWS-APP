@@ -8,6 +8,8 @@ interface HeroCardProps {
   onOpen?: (article: FeedArticle) => void
   isSaved?: boolean
   onToggleSave?: (article: FeedArticle) => void
+  isReminded?: boolean
+  onSetReminder?: (article: FeedArticle) => void
 }
 
 export function HeroCard({
@@ -15,6 +17,8 @@ export function HeroCard({
   onOpen,
   isSaved,
   onToggleSave,
+  isReminded,
+  onSetReminder,
 }: HeroCardProps) {
   const style = { '--tag-color': article.categoryColor } as CSSProperties
 
@@ -58,9 +62,13 @@ export function HeroCard({
           <div className="hero-card__actions" role="group" aria-label="Article actions">
             <button
               type="button"
-              className="hero-card__icon-btn"
-              aria-label="Set reminder for this article"
-              onClick={(e) => e.stopPropagation()}
+              className={`hero-card__icon-btn${isReminded ? ' hero-card__icon-btn--active' : ''}`}
+              aria-label={isReminded ? 'Reminder set' : 'Set reminder for this article'}
+              aria-pressed={isReminded}
+              onClick={(e) => {
+                e.stopPropagation()
+                onSetReminder?.(article)
+              }}
             >
               <Bell size={20} strokeWidth={1.5} aria-hidden />
             </button>

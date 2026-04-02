@@ -7,6 +7,7 @@ import { NewsCard } from '../../components/NewsCard/NewsCard'
 import { SearchBar } from '../../components/SearchBar/SearchBar'
 import type { CategoryId } from '../../data/categories'
 import type { FeedArticle } from '../../data/feed'
+import { useReminders } from '../../hooks/useReminders'
 import { useSavedNews } from '../../hooks/useSavedNews'
 import { newsService } from '../../services/newsService'
 import type { NavTabId } from '../../types/nav'
@@ -23,10 +24,12 @@ export function FeedScreen() {
   const [category, setCategory] = useState<CategoryId>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedArticle, setSelectedArticle] = useState<FeedArticle | null>(null)
+  const [reminderArticle, setReminderArticle] = useState<FeedArticle | null>(null)
   const [feed, setFeed] = useState<FeedArticle[]>([])
   const [loading, setLoading] = useState(true)
 
   const { savedIds, isSaved, toggleSaved } = useSavedNews(feed)
+  const { reminders, addReminder, removeReminder, hasArticleReminder } = useReminders()
 
   /* Backend-ready: feed is loaded through a service abstraction. */
   useEffect(() => {
@@ -149,6 +152,8 @@ export function FeedScreen() {
                   onOpen={(a) => setSelectedArticle(a)}
                   isSaved={isSaved(featuredArticle.id)}
                   onToggleSave={(a) => toggleSaved(a.id)}
+                  isReminded={hasArticleReminder(featuredArticle.id)}
+                  onSetReminder={(a) => { setReminderArticle(a); setTab('reminders') }}
                 />
               )}
               {articles.length === 0 ? (
@@ -165,6 +170,8 @@ export function FeedScreen() {
                     onOpen={(a) => setSelectedArticle(a)}
                     isSaved={isSaved(article.id)}
                     onToggleSave={(a) => toggleSaved(a.id)}
+                    isReminded={hasArticleReminder(article.id)}
+                    onSetReminder={(a) => { setReminderArticle(a); setTab('reminders') }}
                   />
                 ))
               )}
@@ -172,7 +179,16 @@ export function FeedScreen() {
           ))}
 
         {tab === 'saved' && <SavedBoardsScreen feed={feed} savedArticleIds={savedIds} />}
-        {tab === 'reminders' && <RemindersScreen />}
+        {tab === 'reminders' && (
+          <RemindersScreen
+            feed={feed}
+            prefillArticle={reminderArticle}
+            onPrefillConsumed={() => setReminderArticle(null)}
+            reminders={reminders}
+            addReminder={addReminder}
+            removeReminder={removeReminder}
+          />
+        )}
         {tab === 'profile' && <ProfileScreen />}
       </main>
 

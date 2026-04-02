@@ -9,4 +9,6 @@ export interface Reminder {
   /** AI news headline, tool, or topic to follow up on */
   topic: string
   description: string
+  /** Feed article this reminder was created from, if any */
+  articleId?: string
 }
