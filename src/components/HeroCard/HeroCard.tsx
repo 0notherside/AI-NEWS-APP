@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { Bell, Bookmark, Flame, Share2 } from 'lucide-react'
 import type { FeedArticle } from '../../data/feed'
+import { shareArticle } from '../../lib/shareArticle'
 import './HeroCard.css'
 
 interface HeroCardProps {
@@ -104,7 +105,10 @@ export function HeroCard({
               type="button"
               className="hero-card__icon-btn"
               aria-label="Share article"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation()
+                void shareArticle(article)
+              }}
             >
               <Share2 size={20} strokeWidth={1.5} aria-hidden />
             </button>

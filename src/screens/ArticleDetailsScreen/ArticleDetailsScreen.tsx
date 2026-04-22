@@ -1,5 +1,6 @@
-import { ArrowLeft, BadgeCheck, Bell, Bookmark, Ellipsis } from 'lucide-react'
+import { ArrowLeft, BadgeCheck, Bell, Bookmark, Share2 } from 'lucide-react'
 import type { FeedArticle } from '../../data/feed'
+import { shareArticle } from '../../lib/shareArticle'
 import './ArticleDetailsScreen.css'
 
 interface ArticleDetailsScreenProps {
@@ -63,9 +64,12 @@ export function ArticleDetailsScreen({
             <button
               type="button"
               className="article-details__circle-btn"
-              aria-label="More actions"
+              aria-label="Share article"
+              onClick={() => {
+                void shareArticle(article)
+              }}
             >
-              <Ellipsis size={20} strokeWidth={2} aria-hidden />
+              <Share2 size={20} strokeWidth={2} aria-hidden />
             </button>
           </div>
         </div>

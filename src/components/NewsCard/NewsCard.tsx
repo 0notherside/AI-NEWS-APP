@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from 'react'
 import { Bell, Bookmark, Clock, Flame, Share2 } from 'lucide-react'
 import type { FeedArticle } from '../../data/feed'
+import { shareArticle } from '../../lib/shareArticle'
 import './NewsCard.css'
 
 interface NewsCardProps {
@@ -164,7 +165,10 @@ export function NewsCard({
             type="button"
             className="news-card__icon-btn"
             aria-label="Share article"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation()
+              void shareArticle(article)
+            }}
           >
             <Share2 size={20} strokeWidth={1.5} aria-hidden />
           </button>
