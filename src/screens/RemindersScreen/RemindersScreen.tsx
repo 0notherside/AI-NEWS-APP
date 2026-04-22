@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import type { FeedArticle } from '../../data/feed'
 import type { Reminder } from '../../types/reminder'
 import {
@@ -48,6 +48,7 @@ interface RemindersScreenProps {
   feed?: FeedArticle[]
   prefillArticle?: FeedArticle | null
   onPrefillConsumed?: () => void
+  onCancelPrefill?: () => void
   reminders: Reminder[]
   addReminder: (input: Omit<Reminder, 'id' | 'createdAt'>) => void
   removeReminder?: (id: string) => void
@@ -57,6 +58,7 @@ export function RemindersScreen({
   feed = [],
   prefillArticle,
   onPrefillConsumed,
+  onCancelPrefill,
   reminders,
   addReminder,
   removeReminder,
@@ -138,7 +140,19 @@ export function RemindersScreen({
 
   return (
     <div className="reminders">
-      <h1 className="reminders__title">Reminders</h1>
+      <div className="reminders__top">
+        <h1 className="reminders__title">Reminders</h1>
+        {linkedArticle && onCancelPrefill && (
+          <button
+            type="button"
+            className="reminders__back"
+            onClick={onCancelPrefill}
+          >
+            <ArrowLeft size={16} strokeWidth={2.2} aria-hidden />
+            Back to feed
+          </button>
+        )}
+      </div>
 
       {/* ── Add reminder form card ─────────────────────── */}
       <form

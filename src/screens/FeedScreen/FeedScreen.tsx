@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { BottomNav } from '../../components/BottomNav/BottomNav'
 import { CategoryChips } from '../../components/CategoryChips/CategoryChips'
 import { Header } from '../../components/Header/Header'
-import { HeroCard } from '../../components/HeroCard/HeroCard'
 import { NewsCard } from '../../components/NewsCard/NewsCard'
-import { SearchBar } from '../../components/SearchBar/SearchBar'
 import type { CategoryId } from '../../data/categories'
 import type { FeedArticle } from '../../data/feed'
 import { useNewsSettings } from '../../hooks/useNewsSettings'
@@ -27,6 +25,9 @@ const COMMUNITY_MIN_RELEVANCE = 10
 const COMMUNITY_MAX_POSTS = 15
 const COMMUNITY_REFRESH_BATCH_MS = 1400
 const COMMUNITY_ANIM_MS = 280
+const BREAKING_PEEK_PX = 24
+const BREAKING_GAP_PX = 10
+const DEFAULT_BREAKING_VIEWPORT_PX = 360
 
 type CommunityRenderItem = {
   article: FeedArticle
@@ -35,11 +36,19 @@ type CommunityRenderItem = {
 
 export function FeedScreen() {
   const [tab, setTab] = useState<NavTabId>('feed')
-  const [category, setCategory] = useState<CategoryId>('all')
   const [communityCategory, setCommunityCategory] = useState<CategoryId>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedArticle, setSelectedArticle] = useState<FeedArticle | null>(null)
   const [reminderArticle, setReminderArticle] = useState<FeedArticle | null>(null)
+  const [reminderReturnTab, setReminderReturnTab] = useState<NavTabId>('feed')
+  const [breakingIndex, setBreakingIndex] = useState(0)
+  const [breakingStepPx, setBreakingStepPx] = useState(() => {
+    const viewportGuess =
+      typeof window !== 'undefined'
+        ? Math.min(window.innerWidth, 430) - 32
+        : DEFAULT_BREAKING_VIEWPORT_PX
+    return Math.max(viewportGuess - BREAKING_PEEK_PX * 2 + BREAKING_GAP_PX, 240)
+  })
   const [feed, setFeed] = useState<FeedArticle[]>([])
   const [loading, setLoading] = useState(true)
   const [communityRender, setCommunityRender] = useState<CommunityRenderItem[]>(
@@ -47,6 +56,7 @@ export function FeedScreen() {
   )
   const communityBatchTimerRef = useRef<number | null>(null)
   const communityFinalizeTimerRef = useRef<number | null>(null)
+  const breakingViewportRef = useRef<HTMLDivElement | null>(null)
 
   const { settings, setSavedRetentionDays, setRefreshIntervalMinutes } =
     useNewsSettings()
@@ -96,17 +106,14 @@ export function FeedScreen() {
 
   /* Featured article is only surfaced in the All feed */
   const featuredArticle = useMemo(
-    () => (category === 'all' ? (feed.find((a) => a.featured) ?? null) : null),
-    [category, feed],
+    () => feed.find((a) => a.featured) ?? null,
+    [feed],
   )
 
-  /* Regular card list: category filter → search filter → exclude featured */
+  /* Feed list: search filter → exclude featured when shown in breaking section */
   const articles = useMemo(() => {
     const query = searchQuery.trim().toLowerCase()
-    const base =
-      category === 'all'
-        ? feed
-        : feed.filter((a) => a.categoryId === category)
+    const base = feed
     const searched = query
       ? base.filter(
           (a) =>
@@ -118,7 +125,7 @@ export function FeedScreen() {
     return featuredArticle && !query
       ? searched.filter((a) => a.id !== featuredArticle.id)
       : searched
-  }, [category, featuredArticle, feed, searchQuery])
+  }, [featuredArticle, feed, searchQuery])
 
   const communityArticles = useMemo(() => {
     const qualified = topRated.filter(
@@ -130,6 +137,54 @@ export function FeedScreen() {
         : qualified.filter((article) => article.categoryId === communityCategory)
     return filtered.slice(0, COMMUNITY_MAX_POSTS)
   }, [communityCategory, getRelevance, topRated])
+
+  const breakingNews = useMemo(() => {
+    const withFeatured =
+      featuredArticle && !searchQuery
+        ? [featuredArticle, ...articles]
+        : articles
+    return withFeatured.slice(0, 5)
+  }, [articles, featuredArticle, searchQuery])
+
+  const recommendationArticles = useMemo(() => {
+    const breakingIds = new Set(breakingNews.map((article) => article.id))
+    const withFeatured =
+      featuredArticle && !searchQuery
+        ? [featuredArticle, ...articles]
+        : articles
+    return withFeatured.filter((article) => !breakingIds.has(article.id))
+  }, [articles, breakingNews, featuredArticle, searchQuery])
+
+  useEffect(() => {
+    setBreakingIndex(0)
+  }, [searchQuery, feed])
+
+  useEffect(() => {
+    const viewport = breakingViewportRef.current
+    if (!viewport) return
+
+    const updateStep = () => {
+      const width = viewport.clientWidth
+      const step = Math.max(width - BREAKING_PEEK_PX * 2 + BREAKING_GAP_PX, 240)
+      setBreakingStepPx(step)
+    }
+
+    updateStep()
+    window.requestAnimationFrame(updateStep)
+
+    let ro: ResizeObserver | null = null
+    if (typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(updateStep)
+      ro.observe(viewport)
+    } else {
+      window.addEventListener('resize', updateStep)
+    }
+
+    return () => {
+      ro?.disconnect()
+      window.removeEventListener('resize', updateStep)
+    }
+  }, [tab, breakingNews.length])
 
   useEffect(() => {
     if (communityBatchTimerRef.current !== null) {
@@ -188,6 +243,16 @@ export function FeedScreen() {
     }
   }, [])
 
+  const isArticleOpen =
+    (tab === 'feed' || tab === 'community') && selectedArticle !== null
+
+  const openReminderComposer = (article: FeedArticle) => {
+    setReminderReturnTab(tab)
+    setReminderArticle(article)
+    setSelectedArticle(null)
+    setTab('reminders')
+  }
+
   return (
     <div className="app-shell">
       {/* Skip-to-main — visible on focus (WCAG 2.4.1) */}
@@ -195,12 +260,14 @@ export function FeedScreen() {
         Skip to main content
       </a>
 
-      {(tab === 'feed' || tab === 'community') && (
+      {(tab === 'feed' || tab === 'community') && !isArticleOpen && (
         <>
           <Header
             onProfileClick={() => setTab('profile')}
             userName={profile.name}
             avatarDataUrl={profile.avatarDataUrl}
+            searchValue={tab === 'feed' ? searchQuery : undefined}
+            onSearchChange={tab === 'feed' ? setSearchQuery : undefined}
           />
           {tab === 'feed' && (
             <div
@@ -210,19 +277,15 @@ export function FeedScreen() {
               aria-live="polite"
             />
           )}
-          <CategoryChips
-            active={tab === 'feed' ? category : communityCategory}
-            onChange={(id) => {
-              if (tab === 'feed') {
-                setCategory(id)
-                setSearchQuery('')
-              } else {
+          {tab === 'community' && (
+            <CategoryChips
+              active={communityCategory}
+              onChange={(id) => {
                 setCommunityCategory(id)
-              }
-              setSelectedArticle(null)
-            }}
-          />
-          {tab === 'feed' && <SearchBar value={searchQuery} onChange={setSearchQuery} />}
+                setSelectedArticle(null)
+              }}
+            />
+          )}
         </>
       )}
 
@@ -258,6 +321,10 @@ export function FeedScreen() {
             <ArticleDetailsScreen
               article={selectedArticle}
               onBack={() => setSelectedArticle(null)}
+              isSaved={isSaved(selectedArticle.id)}
+              onToggleSave={(a) => toggleSaved(a)}
+              isReminded={hasArticleReminder(selectedArticle.id)}
+              onSetReminder={openReminderComposer}
             />
           ) : tab === 'community' ? (
             loading ? (
@@ -291,10 +358,7 @@ export function FeedScreen() {
                       relevance={getRelevance(item.article.id)}
                       onBoostRelevance={(a) => boostRelevance(a.id)}
                       isReminded={hasArticleReminder(item.article.id)}
-                      onSetReminder={(a) => {
-                        setReminderArticle(a)
-                        setTab('reminders')
-                      }}
+                      onSetReminder={openReminderComposer}
                     />
                   </div>
                 ))}
@@ -308,21 +372,6 @@ export function FeedScreen() {
           ) : (
             /* ── Live feed ────────────────────────────── */
             <>
-              {featuredArticle && !searchQuery && (
-                <HeroCard
-                  article={featuredArticle}
-                  onOpen={(a) => {
-                    markOpened(a.id)
-                    setSelectedArticle(a)
-                  }}
-                  isSaved={isSaved(featuredArticle.id)}
-                  onToggleSave={(a) => toggleSaved(a)}
-                  relevance={getRelevance(featuredArticle.id)}
-                  onBoostRelevance={(a) => boostRelevance(a.id)}
-                  isReminded={hasArticleReminder(featuredArticle.id)}
-                  onSetReminder={(a) => { setReminderArticle(a); setTab('reminders') }}
-                />
-              )}
               {articles.length === 0 ? (
                 <p className="feed-empty">
                   {searchQuery
@@ -330,22 +379,143 @@ export function FeedScreen() {
                     : 'No stories in this category yet.'}
                 </p>
               ) : (
-                articles.map((article) => (
-                  <NewsCard
-                    key={article.id}
-                    article={article}
-                    onOpen={(a) => {
-                      markOpened(a.id)
-                      setSelectedArticle(a)
-                    }}
-                    isSaved={isSaved(article.id)}
-                    onToggleSave={(a) => toggleSaved(a)}
-                    relevance={getRelevance(article.id)}
-                    onBoostRelevance={(a) => boostRelevance(a.id)}
-                    isReminded={hasArticleReminder(article.id)}
-                    onSetReminder={(a) => { setReminderArticle(a); setTab('reminders') }}
-                  />
-                ))
+                <>
+                  {breakingNews.length > 0 && (
+                    <section className="feed-section">
+                      <div className="feed-section__header">
+                        <h2 className="feed-section__title">Breaking News</h2>
+                        <span className="feed-section__action">View all</span>
+                      </div>
+
+                      <div
+                        className="breaking-carousel"
+                        aria-label="Breaking stories"
+                        style={
+                          {
+                            '--peek': `${BREAKING_PEEK_PX}px`,
+                            '--gap': `${BREAKING_GAP_PX}px`,
+                            '--slide-width': `${Math.max(breakingStepPx - BREAKING_GAP_PX, 0)}px`,
+                          } as CSSProperties
+                        }
+                      >
+                        {breakingNews.length > 1 && (
+                          <button
+                            type="button"
+                            className="breaking-carousel__nav breaking-carousel__nav--prev"
+                            aria-label="Previous breaking story"
+                            onClick={() =>
+                              setBreakingIndex((prev) =>
+                                prev === 0 ? breakingNews.length - 1 : prev - 1,
+                              )
+                            }
+                          >
+                            &#8249;
+                          </button>
+                        )}
+
+                        <div ref={breakingViewportRef} className="breaking-carousel__viewport">
+                          <div
+                            className="breaking-carousel__track"
+                            style={{ transform: `translateX(-${breakingIndex * breakingStepPx}px)` }}
+                          >
+                            {breakingNews.map((article) => (
+                              <article
+                                key={`breaking-${article.id}`}
+                                className="breaking-card"
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => {
+                                  markOpened(article.id)
+                                  setSelectedArticle(article)
+                                }}
+                                onKeyDown={(event) => {
+                                  if (event.key === 'Enter' || event.key === ' ') {
+                                    event.preventDefault()
+                                    markOpened(article.id)
+                                    setSelectedArticle(article)
+                                  }
+                                }}
+                              >
+                                <img
+                                  className="breaking-card__image"
+                                  src={article.imageUrl}
+                                  alt=""
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                                <div className="breaking-card__overlay" aria-hidden />
+                                <div className="breaking-card__content">
+                                  <span className="breaking-card__tag">{article.categoryLabel}</span>
+                                  <p className="breaking-card__meta">
+                                    {article.source}
+                                    <span aria-hidden> · </span>
+                                    {article.timeAgo}
+                                  </p>
+                                  <h3 className="breaking-card__title">{article.title}</h3>
+                                </div>
+                              </article>
+                            ))}
+                          </div>
+                        </div>
+
+                        {breakingNews.length > 1 && (
+                          <button
+                            type="button"
+                            className="breaking-carousel__nav breaking-carousel__nav--next"
+                            aria-label="Next breaking story"
+                            onClick={() =>
+                              setBreakingIndex((prev) =>
+                                prev === breakingNews.length - 1 ? 0 : prev + 1,
+                              )
+                            }
+                          >
+                            &#8250;
+                          </button>
+                        )}
+                      </div>
+
+                      {breakingNews.length > 1 && (
+                        <div className="breaking-carousel__dots" aria-hidden>
+                          {breakingNews.map((article, index) => (
+                            <button
+                              key={`dot-${article.id}`}
+                              type="button"
+                              className={`breaking-carousel__dot${index === breakingIndex ? ' breaking-carousel__dot--active' : ''}`}
+                              aria-label={`Show breaking story ${index + 1}`}
+                              aria-pressed={index === breakingIndex}
+                              onClick={() => setBreakingIndex(index)}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </section>
+                  )}
+
+                  {recommendationArticles.length > 0 && (
+                    <section className="feed-section">
+                      <div className="feed-section__header">
+                        <h2 className="feed-section__title">Recommendation</h2>
+                        <span className="feed-section__action">View all</span>
+                      </div>
+                      {recommendationArticles.map((article) => (
+                        <NewsCard
+                          key={article.id}
+                          article={article}
+                          onOpen={(a) => {
+                            markOpened(a.id)
+                            setSelectedArticle(a)
+                          }}
+                          isSaved={isSaved(article.id)}
+                          onToggleSave={(a) => toggleSaved(a)}
+                          relevance={getRelevance(article.id)}
+                          onBoostRelevance={(a) => boostRelevance(a.id)}
+                          isReminded={hasArticleReminder(article.id)}
+                          onSetReminder={openReminderComposer}
+                        />
+                      ))}
+                    </section>
+                  )}
+                </>
               )}
             </>
           ))}
@@ -361,6 +531,10 @@ export function FeedScreen() {
             feed={feed}
             prefillArticle={reminderArticle}
             onPrefillConsumed={() => setReminderArticle(null)}
+            onCancelPrefill={() => {
+              setReminderArticle(null)
+              setTab(reminderReturnTab === 'reminders' ? 'feed' : reminderReturnTab)
+            }}
             reminders={reminders}
             addReminder={addReminder}
             removeReminder={removeReminder}
@@ -383,13 +557,15 @@ export function FeedScreen() {
         )}
       </main>
 
-      <BottomNav
-        active={tab}
-        onChange={(id) => {
-          setTab(id)
-          setSelectedArticle(null)
-        }}
-      />
+      {!isArticleOpen && (
+        <BottomNav
+          active={tab}
+          onChange={(id) => {
+            setTab(id)
+            setSelectedArticle(null)
+          }}
+        />
+      )}
     </div>
   )
 }

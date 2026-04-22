@@ -4,11 +4,12 @@ import './SearchBar.css'
 interface SearchBarProps {
   value: string
   onChange: (value: string) => void
+  variant?: 'default' | 'inline'
 }
 
-export function SearchBar({ value, onChange }: SearchBarProps) {
+export function SearchBar({ value, onChange, variant = 'default' }: SearchBarProps) {
   return (
-    <div className="search-bar">
+    <div className={`search-bar${variant === 'inline' ? ' search-bar--inline' : ''}`}>
       <svg
         className="search-bar__icon"
         width="16"

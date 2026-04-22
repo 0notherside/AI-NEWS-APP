@@ -8,6 +8,175 @@
   border: 1px dashed var(--color-border-subtle);
 }
 
+.feed-section {
+  margin-bottom: 12px;
+}
+
+.feed-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 2px var(--space-page) 12px;
+}
+
+.feed-section__title {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.feed-section__action {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--accent-blue-start);
+}
+
+.breaking-carousel {
+  --peek: 24px;
+  --gap: 10px;
+  --slide-width: calc(100% - (var(--peek) * 2));
+  position: relative;
+  margin: 0 var(--space-page);
+  overflow: hidden;
+}
+
+.breaking-carousel__viewport {
+  overflow: hidden;
+  border-radius: 26px;
+}
+
+.breaking-carousel__track {
+  display: flex;
+  align-items: stretch;
+  gap: var(--gap);
+  padding: 0 var(--peek);
+  transition: transform 320ms cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform;
+}
+
+.breaking-card {
+  position: relative;
+  flex: 0 0 var(--slide-width);
+  height: 236px;
+  border-radius: 24px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid var(--color-border-subtle);
+}
+
+.breaking-card:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.breaking-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.breaking-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 11, 18, 0.08) 22%,
+    rgba(8, 11, 18, 0.88) 100%
+  );
+}
+
+.breaking-card__content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px 14px 13px;
+}
+
+.breaking-card__tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(25, 133, 255, 0.92);
+  color: #f5f8ff;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.breaking-card__meta {
+  margin: 8px 0 5px;
+  font-size: 0.8rem;
+  color: rgba(244, 247, 255, 0.86);
+}
+
+.breaking-card__title {
+  margin: 0;
+  max-width: 28ch;
+  font-size: 1.3rem;
+  line-height: 1.2;
+  letter-spacing: -0.016em;
+  color: #fff;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.breaking-carousel__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(11, 14, 22, 0.6);
+  color: #fff;
+  font-size: 1.4rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.breaking-carousel__nav--prev {
+  left: 10px;
+}
+
+.breaking-carousel__nav--next {
+  right: 10px;
+}
+
+.breaking-carousel__dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.breaking-carousel__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.breaking-carousel__dot--active {
+  width: 22px;
+  background: var(--accent-blue-start);
+}
+
 /* Card list spacing — cards use 1px bottom border as separator,
    add top padding to clear the sticky header */
 .feed-card-list {
@@ -55,7 +224,7 @@
 
 .community-empty__text strong {
   color: var(--color-text);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .community-list {

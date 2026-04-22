@@ -22,6 +22,12 @@
   line-height: var(--line-height-heading);
 }
 
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .header__avatar {
   /* 44×44 touch target; 36px visual circle via inner sizing */
   width: 36px;
@@ -33,7 +39,7 @@
   display: grid;
   place-items: center;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.02em;
   color: #fff;
   background: linear-gradient(
