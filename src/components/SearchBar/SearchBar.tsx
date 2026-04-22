@@ -27,7 +27,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
       <input
         className="search-bar__input"
         type="search"
-        placeholder="Search stories…"
+        placeholder="Search AI news"
         aria-label="Search stories"
         value={value}
         onChange={(e) => onChange(e.target.value)}

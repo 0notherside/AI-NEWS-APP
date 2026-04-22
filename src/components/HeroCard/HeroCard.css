@@ -1,6 +1,6 @@
 .hero-card {
   position: relative;
-  margin: 0 var(--space-page) 1px;
+  margin: 0 var(--space-page) 14px;
   border-radius: var(--radius-card);
   overflow: hidden;
   background: var(--color-card);
@@ -118,7 +118,23 @@
   z-index: 2;
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 4px;
+}
+
+.hero-card__relevance-btn {
+  min-height: var(--touch-target);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 159, 67, 0.35) 0%, rgba(255, 99, 71, 0.28) 100%);
+  color: #ffe2b7;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .hero-card__icon-btn {

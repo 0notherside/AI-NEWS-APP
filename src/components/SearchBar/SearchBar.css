@@ -2,40 +2,53 @@
   position: relative;
   display: flex;
   align-items: center;
-  margin: 0 var(--space-page) 12px;
-  background: var(--color-card);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-chip);
-  transition: border-color 150ms ease;
+  margin: 2px var(--space-page) 14px;
+  min-height: var(--touch-target);
+  background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0.015) 100%
+    ),
+    var(--color-card);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 13px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 10px 20px rgba(0, 0, 0, 0.18);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .search-bar:focus-within {
   border-color: var(--accent-blue-start);
+  box-shadow:
+    0 0 0 2px rgba(59, 130, 246, 0.22),
+    0 10px 20px rgba(0, 0, 0, 0.22);
 }
 
 .search-bar__icon {
   flex-shrink: 0;
-  margin-left: 14px;
-  color: var(--color-text-meta);
+  margin-left: 13px;
+  color: #919caf;
   pointer-events: none;
 }
 
 .search-bar__input {
   flex: 1;
-  height: 44px;
-  padding: 0 10px;
+  height: 42px;
+  padding: 0 12px;
   border: none;
   background: none;
   font-family: inherit;
-  font-size: 0.9375rem; /* 15px */
-  font-weight: 400;
+  font-size: 0.92rem;
+  font-weight: 500;
   color: var(--color-text);
   caret-color: var(--accent-blue-start);
   outline: none;
+  letter-spacing: 0.01em;
 }
 
 .search-bar__input::placeholder {
-  color: var(--color-text-meta);
+  color: #8f98a9;
 }
 
 /* Hide browser-native clear button on search inputs */
@@ -45,21 +58,21 @@
 
 .search-bar__clear {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  margin-right: 6px;
+  width: 30px;
+  height: 30px;
+  margin-right: 7px;
   display: grid;
   place-items: center;
   border: none;
   border-radius: 50%;
-  background: var(--color-border-subtle);
-  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.08);
+  color: #a1a9b9;
   cursor: pointer;
   transition: background 100ms ease, color 100ms ease;
 }
 
 .search-bar__clear:hover {
-  background: #3a3a3a;
+  background: rgba(255, 255, 255, 0.14);
   color: var(--color-text);
 }
 

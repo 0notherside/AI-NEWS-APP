@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { Bell, Bookmark, Share2 } from 'lucide-react'
+import { Bell, Bookmark, Flame, Share2 } from 'lucide-react'
 import type { FeedArticle } from '../../data/feed'
 import './HeroCard.css'
 
@@ -10,6 +10,8 @@ interface HeroCardProps {
   onToggleSave?: (article: FeedArticle) => void
   isReminded?: boolean
   onSetReminder?: (article: FeedArticle) => void
+  relevance?: number
+  onBoostRelevance?: (article: FeedArticle) => void
 }
 
 export function HeroCard({
@@ -19,6 +21,8 @@ export function HeroCard({
   onToggleSave,
   isReminded,
   onSetReminder,
+  relevance = 0,
+  onBoostRelevance,
 }: HeroCardProps) {
   const style = { '--tag-color': article.categoryColor } as CSSProperties
 
@@ -60,6 +64,18 @@ export function HeroCard({
             {article.readMinutes} min read
           </p>
           <div className="hero-card__actions" role="group" aria-label="Article actions">
+            <button
+              type="button"
+              className="hero-card__relevance-btn"
+              aria-label="Increase relevance level"
+              onClick={(e) => {
+                e.stopPropagation()
+                onBoostRelevance?.(article)
+              }}
+            >
+              <Flame size={15} strokeWidth={2} aria-hidden />
+              {relevance}
+            </button>
             <button
               type="button"
               className={`hero-card__icon-btn${isReminded ? ' hero-card__icon-btn--active' : ''}`}

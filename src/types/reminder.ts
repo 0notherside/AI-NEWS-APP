@@ -1,5 +1,7 @@
 export interface Reminder {
   id: string
+  /** Unix ms timestamp when reminder was created */
+  createdAt: number
   /** Local calendar day `YYYY-MM-DD` */
   dateKey: string
   /** 24h `HH:mm` */

@@ -1,1 +1,1 @@
-export type NavTabId = 'feed' | 'saved' | 'reminders' | 'profile'
+export type NavTabId = 'feed' | 'community' | 'saved' | 'reminders' | 'profile'

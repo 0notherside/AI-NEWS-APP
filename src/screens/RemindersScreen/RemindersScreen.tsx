@@ -49,7 +49,7 @@ interface RemindersScreenProps {
   prefillArticle?: FeedArticle | null
   onPrefillConsumed?: () => void
   reminders: Reminder[]
-  addReminder: (input: Omit<Reminder, 'id'>) => void
+  addReminder: (input: Omit<Reminder, 'id' | 'createdAt'>) => void
   removeReminder?: (id: string) => void
 }
 

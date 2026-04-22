@@ -1,6 +1,6 @@
 .news-card {
   position: relative;          /* anchor for stretched-link ::after */
-  margin: 0 var(--space-page);
+  margin: 0 var(--space-page) 14px;
   padding: 16px;
   background: var(--color-card);
   border-radius: var(--radius-card);
@@ -172,7 +172,40 @@
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 4px;
+}
+
+.news-card__relevance-btn {
+  min-height: var(--touch-target);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 159, 67, 0.26) 0%, rgba(255, 99, 71, 0.2) 100%);
+  color: #ffd28f;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.news-card__relevance-btn:hover,
+.news-card__relevance-btn:active {
+  color: #ffe2b7;
+  border-color: rgba(255, 160, 67, 0.35);
+}
+
+.news-card__relevance-level {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 11px;
+  opacity: 0.92;
 }
 
 .news-card__icon-btn {

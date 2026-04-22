@@ -1,9 +1,10 @@
-import { Bell, Bookmark, Home, User } from 'lucide-react'
+import { Bell, Bookmark, Home, User, Users } from 'lucide-react'
 import type { NavTabId } from '../../types/nav'
 import './BottomNav.css'
 
 const ITEMS: { id: NavTabId; label: string; Icon: typeof Home }[] = [
   { id: 'feed', label: 'Feed', Icon: Home },
+  { id: 'community', label: 'Community', Icon: Users },
   { id: 'saved', label: 'Saved', Icon: Bookmark },
   { id: 'reminders', label: 'Reminders', Icon: Bell },
   { id: 'profile', label: 'Profile', Icon: User },
@@ -28,15 +29,13 @@ export function BottomNav({ active, onChange }: BottomNavProps) {
               (isActive ? ' bottom-nav__item--active' : '')
             }
             aria-current={isActive ? 'page' : undefined}
+            aria-label={label}
             onClick={() => onChange(id)}
           >
-            <div className="bottom-nav__indicator-wrap" aria-hidden>
-              <span className="bottom-nav__indicator" />
-            </div>
             <span className="bottom-nav__icon-slot">
-              <Icon size={24} strokeWidth={1.5} />
+              <Icon size={22} strokeWidth={1.8} />
             </span>
-            {label}
+            <span className="sr-only">{label}</span>
           </button>
         )
       })}

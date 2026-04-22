@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { Reminder } from '../types/reminder'
+import type { LastOpenedMap } from './useArticleOpens'
 
 const STORAGE_KEY = 'ai-pulse-reminders'
+const STALE_REMINDER_MS = 60 * 24 * 60 * 60 * 1000
 
 function asString(v: unknown): string {
   return typeof v === 'string' ? v : ''
@@ -19,6 +21,9 @@ function normalizeReminder(raw: unknown): Reminder | null {
   }
   return {
     id: o.id,
+    createdAt: typeof o.createdAt === 'number' && Number.isFinite(o.createdAt)
+      ? o.createdAt
+      : Date.now(),
     dateKey: o.dateKey,
     time: o.time,
     link: asString(o.link),
@@ -46,7 +51,7 @@ function persist(items: Reminder[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
 }
 
-export function useReminders() {
+export function useReminders(lastOpenedById: LastOpenedMap = {}) {
   const [reminders, setReminders] = useState<Reminder[]>(load)
 
   useEffect(() => {
@@ -54,10 +59,10 @@ export function useReminders() {
   }, [reminders])
 
   const addReminder = useCallback(
-    (input: Omit<Reminder, 'id'>) => {
+    (input: Omit<Reminder, 'id' | 'createdAt'>) => {
       setReminders((prev) => [
         ...prev,
-        { ...input, id: crypto.randomUUID() },
+        { ...input, id: crypto.randomUUID(), createdAt: Date.now() },
       ])
     },
     [],
@@ -71,6 +76,22 @@ export function useReminders() {
     (articleId: string) => reminders.some((r) => r.articleId === articleId),
     [reminders],
   )
+
+  useEffect(() => {
+    const prune = () => {
+      const now = Date.now()
+      setReminders((prev) =>
+        prev.filter((r) => {
+          if (!r.articleId) return true
+          const lastTouched = lastOpenedById[r.articleId] ?? r.createdAt
+          return now - lastTouched <= STALE_REMINDER_MS
+        }),
+      )
+    }
+    prune()
+    const timer = window.setInterval(prune, 60 * 60 * 1000)
+    return () => window.clearInterval(timer)
+  }, [lastOpenedById])
 
   return { reminders, addReminder, removeReminder, hasArticleReminder }
 }

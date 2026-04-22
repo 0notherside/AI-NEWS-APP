@@ -32,6 +32,10 @@ interface ProfileScreenProps {
   reminderCount?: number
   theme?: Theme
   onSetTheme?: (t: Theme) => void
+  savedRetentionDays?: number
+  onSetSavedRetentionDays?: (days: number) => void
+  refreshIntervalMinutes?: number
+  onSetRefreshIntervalMinutes?: (minutes: number) => void
 }
 
 export function ProfileScreen({
@@ -42,6 +46,10 @@ export function ProfileScreen({
   reminderCount = 0,
   theme = 'dark',
   onSetTheme,
+  savedRetentionDays = 30,
+  onSetSavedRetentionDays,
+  refreshIntervalMinutes = 5,
+  onSetRefreshIntervalMinutes,
 }: ProfileScreenProps) {
   const [editingName, setEditingName] = useState(false)
   const [draftName, setDraftName] = useState(profile.name)
@@ -274,6 +282,42 @@ export function ProfileScreen({
           <ChevronRight className="profile__row-chevron" size={20} aria-hidden />
         </button>
       </nav>
+
+      <h2 className="profile__section-label">News settings</h2>
+      <section className="profile__card" aria-label="News settings">
+        <div className="profile__row profile__row--setting">
+          <span className="profile__row-label">
+            Saved retention (days)
+          </span>
+          <input
+            type="number"
+            min={1}
+            max={365}
+            className="profile__number-input"
+            value={savedRetentionDays}
+            onChange={(e) =>
+              onSetSavedRetentionDays?.(Number(e.target.value || 30))
+            }
+            aria-label="Saved retention days"
+          />
+        </div>
+        <div className="profile__row profile__row--setting">
+          <span className="profile__row-label">
+            Feed refresh (minutes)
+          </span>
+          <input
+            type="number"
+            min={1}
+            max={60}
+            className="profile__number-input"
+            value={refreshIntervalMinutes}
+            onChange={(e) =>
+              onSetRefreshIntervalMinutes?.(Number(e.target.value || 5))
+            }
+            aria-label="Feed refresh interval"
+          />
+        </div>
+      </section>
 
       {/* ── Support ──────────────────────────────────── */}
       <h2 className="profile__section-label">Support</h2>
