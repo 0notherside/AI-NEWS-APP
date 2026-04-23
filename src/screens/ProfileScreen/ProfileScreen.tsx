@@ -17,12 +17,22 @@ import { getInitials } from '../../hooks/useProfile'
 import type { Theme } from '../../hooks/useTheme'
 import './ProfileScreen.css'
 
-const INTERESTS: { label: string; emoji: string; variant: string }[] = [
-  { label: 'Editing', emoji: '✂️', variant: 'profile__chip--editing' },
-  { label: 'Music', emoji: '🎵', variant: 'profile__chip--music' },
-  { label: 'Voice', emoji: '🎙️', variant: 'profile__chip--voice' },
-  { label: 'Code', emoji: '💻', variant: 'profile__chip--code' },
+const INTERESTS = [
+  { label: 'Editing',  emoji: '✂️',  desc: 'Video & image tools',  color: '#bf5af2', bg: 'rgba(191,90,242,0.10)' },
+  { label: 'Music',    emoji: '🎵',  desc: 'AI audio generation',  color: '#ff375f', bg: 'rgba(255,55,95,0.10)'  },
+  { label: 'Voice',    emoji: '🎙️', desc: 'TTS & translation',    color: '#30d158', bg: 'rgba(48,209,88,0.10)'  },
+  { label: 'Code',     emoji: '💻',  desc: 'Dev tools & LLMs',     color: '#0a84ff', bg: 'rgba(10,132,255,0.10)' },
 ]
+
+const INTERESTS_KEY = 'ai-pulse-interests'
+
+function readInterests(): Set<string> {
+  try {
+    const arr = JSON.parse(localStorage.getItem(INTERESTS_KEY) ?? '[]')
+    if (Array.isArray(arr)) return new Set(arr as string[])
+  } catch {}
+  return new Set(INTERESTS.map((i) => i.label))
+}
 
 interface ProfileScreenProps {
   profile: Profile
@@ -53,7 +63,17 @@ export function ProfileScreen({
 }: ProfileScreenProps) {
   const [editingName, setEditingName] = useState(false)
   const [draftName, setDraftName] = useState(profile.name)
+  const [selectedInterests, setSelectedInterests] = useState<Set<string>>(readInterests)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const toggleInterest = (label: string) => {
+    setSelectedInterests((prev) => {
+      const next = new Set(prev)
+      next.has(label) ? next.delete(label) : next.add(label)
+      localStorage.setItem(INTERESTS_KEY, JSON.stringify([...next]))
+      return next
+    })
+  }
 
   const handleAvatarClick = () => fileInputRef.current?.click()
 
@@ -206,15 +226,33 @@ export function ProfileScreen({
 
       {/* ── Interests ────────────────────────────────── */}
       <h2 className="profile__section-label">Your interests</h2>
-      <div className="profile__card">
-        <ul className="profile__chips" role="list" aria-label="Your interest topics">
-          {INTERESTS.map((item) => (
-            <li key={item.label} className={`profile__chip ${item.variant}`}>
-              <span className="profile__chip-emoji" aria-hidden>{item.emoji}</span>
-              {item.label}
-            </li>
-          ))}
-        </ul>
+      <div className="interests-grid" role="group" aria-label="Your interest topics">
+        {INTERESTS.map((item) => {
+          const active = selectedInterests.has(item.label)
+          return (
+            <button
+              key={item.label}
+              type="button"
+              className={`interest-card${active ? ' interest-card--active' : ''}`}
+              style={{
+                '--ic-color': item.color,
+                '--ic-bg': active ? item.bg : 'transparent',
+                '--ic-border': active ? item.color : 'var(--color-border-subtle)',
+              } as React.CSSProperties}
+              aria-pressed={active}
+              onClick={() => toggleInterest(item.label)}
+            >
+              {active && (
+                <span className="interest-card__check" aria-hidden>
+                  <Check size={11} strokeWidth={3} />
+                </span>
+              )}
+              <span className="interest-card__emoji" aria-hidden>{item.emoji}</span>
+              <span className="interest-card__label">{item.label}</span>
+              <span className="interest-card__desc">{item.desc}</span>
+            </button>
+          )
+        })}
       </div>
 
       {/* ── Account settings ─────────────────────────── */}

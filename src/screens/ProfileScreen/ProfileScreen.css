@@ -277,57 +277,76 @@
   margin-bottom: 20px;
 }
 
-/* ── Interest chips ───────────────────────────────── */
-.profile__chips {
+/* ── Interest grid ────────────────────────────────── */
+.interests-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.interest-card {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 14px 16px;
-  list-style: none;
-  margin: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 4px;
+  height: 110px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1.5px solid var(--ic-border, var(--color-border-subtle));
+  background: var(--ic-bg, transparent);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-sans);
+  transition: border-color 150ms ease, background 150ms ease, transform 120ms ease;
 }
 
-.profile__chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border-radius: var(--radius-chip);
-  font-size: 0.8125rem; /* 13px */
-  font-weight: 600;
-  letter-spacing: 0.02em;
+.interest-card:hover  { opacity: 0.88; }
+.interest-card:active { transform: scale(0.97); }
+
+.interest-card:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+/* Checkmark badge — top-right when active */
+.interest-card__check {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ic-color, var(--accent-blue-start));
+  color: #fff;
+  display: grid;
+  place-items: center;
+}
+
+/* Large emoji */
+.interest-card__emoji {
+  font-size: 1.875rem;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+/* Category name */
+.interest-card__label {
+  font-size: 0.9375rem;
+  font-weight: 700;
   color: var(--color-text);
-  background: transparent;
-  border: 1px solid var(--color-border-subtle);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
-/* Hide emojis from interest chips */
-.profile__chip-emoji {
-  display: none;
-}
-
-.profile__chip--editing {
-  border-color: rgba(167, 139, 250, 0.4);
-  background: rgba(167, 139, 250, 0.1);
-  color: #a78bfa;
-}
-
-.profile__chip--music {
-  border-color: rgba(244, 114, 182, 0.4);
-  background: rgba(244, 114, 182, 0.1);
-  color: #f472b6;
-}
-
-.profile__chip--voice {
-  border-color: rgba(52, 211, 153, 0.4);
-  background: rgba(52, 211, 153, 0.1);
-  color: #34d399;
-}
-
-.profile__chip--code {
-  border-color: rgba(59, 130, 246, 0.4);
-  background: rgba(59, 130, 246, 0.1);
-  color: var(--accent-blue-start);
+/* Short description */
+.interest-card__desc {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  line-height: 1.3;
 }
 
 /* ── Settings rows ────────────────────────────────── */
