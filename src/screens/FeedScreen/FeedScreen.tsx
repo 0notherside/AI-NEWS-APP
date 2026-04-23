@@ -70,7 +70,7 @@ export function FeedScreen() {
     feed,
     settings.savedRetentionDays,
   )
-  const { getRelevance, boostRelevance, topRated } = useRelevance(feed)
+  const { getRelevance, boostRelevance, hasReacted, topRated, reactionsRemaining } = useRelevance(feed)
   const { reminders, addReminder, removeReminder, hasArticleReminder } =
     useReminders(lastOpenedById)
 
@@ -396,6 +396,8 @@ export function FeedScreen() {
                         isSaved={isSaved(item.article.id)}
                         onToggleSave={(a) => toggleSaved(a)}
                         relevance={getRelevance(item.article.id)}
+                        userHasReacted={hasReacted(item.article.id)}
+                        reactionsRemaining={reactionsRemaining}
                         onBoostRelevance={(a) => boostRelevance(a.id)}
                         isReminded={hasArticleReminder(item.article.id)}
                         onSetReminder={openReminderComposer}
@@ -553,6 +555,8 @@ export function FeedScreen() {
                           isSaved={isSaved(article.id)}
                           onToggleSave={(a) => toggleSaved(a)}
                           relevance={getRelevance(article.id)}
+                          userHasReacted={hasReacted(article.id)}
+                          reactionsRemaining={reactionsRemaining}
                           onBoostRelevance={(a) => boostRelevance(a.id)}
                           isReminded={hasArticleReminder(article.id)}
                           onSetReminder={openReminderComposer}

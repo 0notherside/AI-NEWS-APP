@@ -13,6 +13,8 @@ interface NewsCardProps {
   isReminded?: boolean
   onSetReminder?: (article: FeedArticle) => void
   relevance?: number
+  userHasReacted?: boolean
+  reactionsRemaining?: number
   onBoostRelevance?: (article: FeedArticle) => void
 }
 
@@ -25,6 +27,8 @@ export function NewsCard({
   isReminded,
   onSetReminder,
   relevance = 0,
+  userHasReacted = false,
+  reactionsRemaining = 5,
   onBoostRelevance,
 }: NewsCardProps) {
   const [pressed, setPressed] = useState(false)
@@ -125,8 +129,13 @@ export function NewsCard({
           </p>
           <button
             type="button"
-            className={`news-card__fire-btn${relevance > 0 ? ' news-card__fire-btn--lit' : ''}`}
-            aria-label={`${relevance} reactions. Boost this article`}
+            className={[
+              'news-card__fire-btn',
+              userHasReacted ? 'news-card__fire-btn--lit' : '',
+              !userHasReacted && reactionsRemaining === 0 ? 'news-card__fire-btn--exhausted' : '',
+            ].filter(Boolean).join(' ')}
+            aria-label={userHasReacted ? 'Remove reaction' : `${relevance} reactions`}
+            aria-pressed={userHasReacted}
             onClick={(e) => { e.stopPropagation(); onBoostRelevance?.(article) }}
           >
             <span className="news-card__fire-emoji" aria-hidden>🔥</span>

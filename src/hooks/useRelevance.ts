@@ -1,112 +1,140 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FeedArticle } from '../data/feed'
 
-const STORAGE_KEY = 'ai-pulse-relevance'
-const RESET_META_KEY = 'ai-pulse-relevance-last-reset'
-const WEEKLY_CHECK_MS = 60 * 1000
+const SCORES_KEY    = 'ai-pulse-relevance'
+const REACTIONS_KEY = 'ai-pulse-user-reactions'
+const BUDGET_KEY    = 'ai-pulse-daily-budget'
+const DAILY_LIMIT   = 5
 
-type RelevanceMap = Record<string, number>
+type ScoreMap    = Record<string, number>
+type BudgetStore = { remaining: number; date: string }
 
-function readStored(): RelevanceMap {
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function readScores(): ScoreMap {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(SCORES_KEY)
     if (!raw) return {}
-    const parsed = JSON.parse(raw) as unknown
-    if (!parsed || typeof parsed !== 'object') return {}
-    const out: RelevanceMap = {}
-    for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
-      if (typeof v === 'number' && Number.isFinite(v) && v >= 0) {
-        out[k] = Math.floor(v)
-      }
+    const parsed = JSON.parse(raw) as Record<string, unknown>
+    const out: ScoreMap = {}
+    for (const [k, v] of Object.entries(parsed)) {
+      if (typeof v === 'number' && Number.isFinite(v) && v >= 0) out[k] = Math.floor(v)
     }
     return out
-  } catch {
-    return {}
-  }
+  } catch { return {} }
 }
 
-function readLastResetAt(): number {
+function readReactions(): Set<string> {
   try {
-    const raw = localStorage.getItem(RESET_META_KEY)
-    if (!raw) return 0
-    const n = Number(raw)
-    return Number.isFinite(n) && n > 0 ? n : 0
-  } catch {
-    return 0
-  }
+    const arr = JSON.parse(localStorage.getItem(REACTIONS_KEY) ?? '[]')
+    if (Array.isArray(arr)) return new Set(arr as string[])
+  } catch {}
+  return new Set()
 }
 
-/** Most recent Sunday 23:59 local time before/at `now`. */
-function latestWeeklyBoundary(now = new Date()): number {
-  const boundary = new Date(now)
-  boundary.setDate(now.getDate() - now.getDay())
-  boundary.setHours(23, 59, 0, 0)
-  if (now.getTime() < boundary.getTime()) {
-    boundary.setDate(boundary.getDate() - 7)
-  }
-  return boundary.getTime()
+function readBudget(): BudgetStore {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(BUDGET_KEY) ?? '') as BudgetStore
+    if (parsed.date === todayISO()) return parsed
+  } catch {}
+  return { remaining: DAILY_LIMIT, date: todayISO() }
 }
 
 export function useRelevance(feed: FeedArticle[]) {
-  const [relevanceById, setRelevanceById] = useState<RelevanceMap>(readStored)
-  const [lastResetAt, setLastResetAt] = useState<number>(readLastResetAt)
+  const [scores,    setScores]    = useState<ScoreMap>(readScores)
+  const [reactions, setReactions] = useState<Set<string>>(readReactions)
+  const [budget,    setBudget]    = useState<BudgetStore>(readBudget)
 
+  // Refs so callbacks always read fresh values without stale closures
+  const reactionsRef = useRef(reactions)
+  const budgetRef    = useRef(budget)
+  useEffect(() => { reactionsRef.current = reactions }, [reactions])
+  useEffect(() => { budgetRef.current    = budget    }, [budget])
+
+  // Seed missing article scores
   useEffect(() => {
-    if (feed.length === 0) return
-    setRelevanceById((prev) => {
+    if (!feed.length) return
+    setScores((prev) => {
       const next = { ...prev }
-      for (const article of feed) {
-        if (typeof next[article.id] !== 'number') {
-          next[article.id] = article.relevanceCount ?? 0
-        }
+      for (const a of feed) {
+        if (typeof next[a.id] !== 'number') next[a.id] = 0
       }
       return next
     })
   }, [feed])
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(relevanceById))
-  }, [relevanceById])
+  // Persist
+  useEffect(() => { localStorage.setItem(SCORES_KEY,    JSON.stringify(scores))          }, [scores])
+  useEffect(() => { localStorage.setItem(REACTIONS_KEY, JSON.stringify([...reactions]))  }, [reactions])
+  useEffect(() => { localStorage.setItem(BUDGET_KEY,    JSON.stringify(budget))          }, [budget])
 
+  // Daily reset on tab focus / visibility
   useEffect(() => {
-    localStorage.setItem(RESET_META_KEY, String(lastResetAt))
-  }, [lastResetAt])
-
-  useEffect(() => {
-    const checkAndReset = () => {
-      const boundary = latestWeeklyBoundary()
-      if (boundary > lastResetAt) {
-        setRelevanceById({})
-        setLastResetAt(boundary)
-      }
+    const reset = () => {
+      const today = todayISO()
+      setBudget((prev) =>
+        prev.date !== today ? { remaining: DAILY_LIMIT, date: today } : prev
+      )
     }
-
-    checkAndReset()
-    const timer = window.setInterval(checkAndReset, WEEKLY_CHECK_MS)
-    window.addEventListener('focus', checkAndReset)
-    document.addEventListener('visibilitychange', checkAndReset)
-
+    document.addEventListener('visibilitychange', reset)
+    window.addEventListener('focus', reset)
     return () => {
-      window.clearInterval(timer)
-      window.removeEventListener('focus', checkAndReset)
-      document.removeEventListener('visibilitychange', checkAndReset)
+      document.removeEventListener('visibilitychange', reset)
+      window.removeEventListener('focus', reset)
     }
-  }, [lastResetAt])
+  }, [])
 
-  const boostRelevance = (id: string) => {
-    setRelevanceById((prev) => ({
-      ...prev,
-      [id]: (prev[id] ?? 0) + 1,
-    }))
+  /**
+   * Toggle a reaction on an article:
+   * - First press: costs 1 daily reaction (max 5/day), score +1
+   * - Second press: refunds 1 daily reaction, score -1
+   */
+  const boostRelevance = useCallback((id: string) => {
+    const today         = todayISO()
+    const prevReactions = reactionsRef.current
+    const prevBudget    = budgetRef.current
+    const currentBudget = prevBudget.date === today
+      ? prevBudget
+      : { remaining: DAILY_LIMIT, date: today }
+
+    const alreadyReacted = prevReactions.has(id)
+
+    if (alreadyReacted) {
+      // Un-react: refund budget, decrement score
+      const next = new Set(prevReactions)
+      next.delete(id)
+      setReactions(next)
+      setScores((s) => ({ ...s, [id]: Math.max(0, (s[id] ?? 1) - 1) }))
+      setBudget({ remaining: Math.min(DAILY_LIMIT, currentBudget.remaining + 1), date: today })
+    } else if (currentBudget.remaining > 0) {
+      // React: spend 1 from budget, increment score
+      const next = new Set(prevReactions)
+      next.add(id)
+      setReactions(next)
+      setScores((s) => ({ ...s, [id]: (s[id] ?? 0) + 1 }))
+      setBudget({ remaining: currentBudget.remaining - 1, date: today })
+    }
+    // else: budget exhausted — do nothing
+  }, [])
+
+  const getRelevance = useCallback((id: string) => scores[id] ?? 0, [scores])
+  const hasReacted   = useCallback((id: string) => reactions.has(id), [reactions])
+
+  const topRated = useMemo(() =>
+    feed
+      .filter((a) => (scores[a.id] ?? 0) > 0)
+      .sort((a, b) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0)),
+    [feed, scores]
+  )
+
+  return {
+    relevanceById: scores,
+    getRelevance,
+    hasReacted,
+    boostRelevance,
+    topRated,
+    reactionsRemaining: budget.remaining,
   }
-
-  const getRelevance = (id: string) => relevanceById[id] ?? 0
-
-  const topRated = useMemo(() => {
-    return feed
-      .filter((article) => (relevanceById[article.id] ?? 0) > 0)
-      .sort((a, b) => (relevanceById[b.id] ?? 0) - (relevanceById[a.id] ?? 0))
-  }, [feed, relevanceById])
-
-  return { relevanceById, getRelevance, boostRelevance, topRated }
 }

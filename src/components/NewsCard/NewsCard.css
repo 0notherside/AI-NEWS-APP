@@ -223,6 +223,12 @@
   color: #f97316;
 }
 
+/* Budget exhausted — muted, non-interactive look */
+.news-card__fire-btn--exhausted {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 .news-card__fire-btn:focus-visible {
   outline: var(--focus-outline);
   outline-offset: var(--focus-offset);
