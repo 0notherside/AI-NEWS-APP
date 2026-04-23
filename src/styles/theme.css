@@ -21,10 +21,18 @@
   --accent-glow: rgba(59, 130, 246, 0.35);
 
   /* ── Category colours ─────────────────────────────── */
-  --category-editing: #bf5af2;
-  --category-music: #ff375f;
-  --category-voice: #30d158;
-  --category-code: #0a84ff;
+  --category-models:   #ff9f0a;
+  --category-agents:   #ffd60a;
+  --category-image:    #ff6b6b;
+  --category-video:    #5e5ce6;
+  --category-code:     #0a84ff;
+  --category-voice:    #30d158;
+  --category-music:    #ff375f;
+  --category-editing:  #bf5af2;
+  --category-robotics: #40c8e0;
+  --category-research: #a2845e;
+  --category-business: #8e8e93;
+  --category-safety:   #ff3b30;
 
   /* ── Surface tokens ───────────────────────────────── */
   --color-nav-bg: #1c1c1e;
