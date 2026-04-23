@@ -117,13 +117,12 @@ export function NewsCard({
           )}
         </h2>
 
-        <p className="news-card__byline">
-          <span>by {article.source}</span>
-          <span className="news-card__sep" aria-hidden>·</span>
-          <time>{article.timeAgo}</time>
-        </p>
-
-        <div className="news-card__bottom-row">
+        <div className="news-card__byline-row">
+          <p className="news-card__byline">
+            <span>by {article.source}</span>
+            <span className="news-card__sep" aria-hidden>·</span>
+            <time>{article.timeAgo}</time>
+          </p>
           <button
             type="button"
             className={`news-card__fire-btn${relevance > 0 ? ' news-card__fire-btn--lit' : ''}`}
