@@ -23,10 +23,10 @@
 /* ── Top bar ───────────────────────────────────────── */
 .ad__top-bar {
   position: absolute;
-  top: calc(14px + env(safe-area-inset-top, 0px));
+  top: calc(20px + env(safe-area-inset-top, 0px));
   left: 0;
   right: 0;
-  padding: 0 16px;
+  padding: 0 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -63,8 +63,8 @@
   margin-top: -22px;
   position: relative;
   z-index: 1;
-  /* Consistent 22px breathing room from both screen edges */
-  padding: 26px 22px 40px;
+  /* Consistent 26px breathing room from both screen edges */
+  padding: 28px 26px 48px;
 }
 
 /* ── Tags ──────────────────────────────────────────── */
