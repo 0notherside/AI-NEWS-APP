@@ -8,8 +8,9 @@
   border: 1px dashed var(--color-border-subtle);
 }
 
+/* ── Section ───────────────────────────────────────── */
 .feed-section {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .feed-section__header {
@@ -17,23 +18,27 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin: 2px var(--space-page) 12px;
+  margin: 0 var(--space-page) 14px;
+  padding-top: 20px;
 }
 
 .feed-section__title {
   margin: 0;
-  font-size: 1.45rem;
-  line-height: 1.18;
-  letter-spacing: -0.02em;
+  font-size: var(--font-size-display);
+  font-weight: 800;
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.025em;
   color: var(--color-text);
 }
 
 .feed-section__action {
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
   color: var(--accent-blue-start);
+  white-space: nowrap;
 }
 
+/* ── Breaking carousel ─────────────────────────────── */
 .breaking-carousel {
   --peek: 24px;
   --gap: 10px;
@@ -45,7 +50,7 @@
 
 .breaking-carousel__viewport {
   overflow: hidden;
-  border-radius: 26px;
+  border-radius: 20px;
 }
 
 .breaking-carousel__track {
@@ -57,14 +62,16 @@
   will-change: transform;
 }
 
+/* ── Individual breaking card ──────────────────────── */
 .breaking-card {
   position: relative;
   flex: 0 0 var(--slide-width);
-  height: 236px;
-  border-radius: 24px;
+  height: 240px;
+  border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
   border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-card);
 }
 
 .breaking-card:focus-visible {
@@ -84,8 +91,8 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(8, 11, 18, 0.08) 22%,
-    rgba(8, 11, 18, 0.88) 100%
+    rgba(4, 6, 10, 0.04) 18%,
+    rgba(4, 6, 10, 0.86) 100%
   );
 }
 
@@ -94,33 +101,37 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 14px 14px 13px;
+  padding: 16px 16px 14px;
 }
 
 .breaking-card__tag {
   display: inline-flex;
   align-items: center;
-  min-height: 26px;
+  height: 26px;
   padding: 0 12px;
-  border-radius: 999px;
-  background: rgba(25, 133, 255, 0.92);
-  color: #f5f8ff;
-  font-size: 0.72rem;
-  font-weight: 500;
+  border-radius: var(--radius-chip);
+  background: rgba(10, 132, 255, 0.9);
+  color: #fff;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .breaking-card__meta {
-  margin: 8px 0 5px;
-  font-size: 0.8rem;
-  color: rgba(244, 247, 255, 0.86);
+  margin: 8px 0 6px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: rgba(245, 248, 255, 0.78);
 }
 
 .breaking-card__title {
   margin: 0;
-  max-width: 28ch;
-  font-size: 1.3rem;
-  line-height: 1.2;
-  letter-spacing: -0.016em;
+  max-width: 30ch;
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: var(--line-height-snug);
+  letter-spacing: -0.02em;
   color: #fff;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -128,88 +139,84 @@
   overflow: hidden;
 }
 
+/* ── Carousel nav buttons ──────────────────────────── */
 .breaking-carousel__nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border: none;
   border-radius: 50%;
-  background: rgba(11, 14, 22, 0.6);
+  background: rgba(10, 10, 14, 0.52);
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   line-height: 1;
   display: grid;
   place-items: center;
   cursor: pointer;
   z-index: 2;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
-.breaking-carousel__nav--prev {
-  left: 10px;
-}
+.breaking-carousel__nav--prev { left: 10px; }
+.breaking-carousel__nav--next { right: 10px; }
 
-.breaking-carousel__nav--next {
-  right: 10px;
-}
-
+/* ── Carousel dots ─────────────────────────────────── */
 .breaking-carousel__dots {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin: 12px 0 0;
 }
 
 .breaking-carousel__dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 999px;
   border: none;
   padding: 0;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--color-chip-border);
+  transition: width 200ms ease, background 200ms ease;
 }
 
 .breaking-carousel__dot--active {
-  width: 22px;
+  width: 20px;
   background: var(--accent-blue-start);
 }
 
-/* Card list spacing — cards use 1px bottom border as separator,
-   add top padding to clear the sticky header */
+/* ── Card list ─────────────────────────────────────── */
 .feed-card-list {
   padding-top: 4px;
 }
 
+/* ── Community empty state ─────────────────────────── */
 .community-empty {
   margin: 22px var(--space-page);
   padding: 20px 20px 18px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%),
-    var(--color-card);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.04) inset,
-    0 12px 24px rgba(0, 0, 0, 0.22);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
 }
 
 .community-empty__eyebrow {
   margin: 0 0 8px;
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   font-weight: 700;
   letter-spacing: 0.08em;
-  line-height: 1.35;
   text-transform: uppercase;
   color: #93c5fd;
 }
 
 .community-empty__title {
   margin: 0 0 10px;
-  font-size: 20px;
-  line-height: 1.28;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: var(--line-height-snug);
   letter-spacing: -0.015em;
   color: var(--color-text);
 }
@@ -217,8 +224,8 @@
 .community-empty__text {
   margin: 0;
   max-width: 34ch;
-  font-size: 14px;
-  line-height: 1.58;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
   color: var(--color-text-muted);
 }
 
@@ -227,9 +234,10 @@
   font-weight: 600;
 }
 
+/* ── Community list + animations ──────────────────── */
 .community-list {
   display: grid;
-  gap: 8px;
+  gap: 0;
 }
 
 .community-list__item {
@@ -260,9 +268,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .community-list__item {
-    transition: none;
-  }
+  .community-list__item { transition: none; }
   .community-list__item--enter,
   .community-list__item--stable,
   .community-list__item--exit {

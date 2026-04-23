@@ -1,106 +1,68 @@
 .news-card {
-  position: relative;          /* anchor for stretched-link ::after */
+  position: relative;
   margin: 0 var(--space-page) 14px;
-  padding: 16px;
   background: var(--color-card);
   border-radius: var(--radius-card);
   border: 1px solid var(--color-border-subtle);
-  border-bottom-color: var(--color-separator);
-  transition:
-    opacity 120ms ease-out,
-    transform 120ms ease-out,
-    border-color 120ms ease-out;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
 }
 
-/* Micro-interaction: card tap — JS class for broad browser support,
-   :has fallback for browsers that support it */
-.news-card--pressed,
-.news-card:has(.news-card__title-btn:active) {
-  transform: scale(0.98);
-  opacity: 0.9;
+.news-card--pressed {
+  transform: scale(0.985);
+  box-shadow: none;
 }
 
-.news-card:has(.news-card__title-btn:hover) {
-  border-color: #3a3a3a;
-  border-bottom-color: var(--color-separator);
-}
-
-/* ── Category row (top) ──────────────────────────── */
-.news-card__meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.news-card__tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.6875rem; /* 11px */
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--tag-color, var(--color-text-muted));
-}
-
-/* Dot and emoji removed from visual presentation */
-.news-card__dot,
-.news-card__tag-emoji {
-  display: none;
-}
-
-.news-card__time {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.75rem; /* 12px */
-  color: var(--color-text-meta);
-  font-weight: 400;
-  flex-shrink: 0;
-}
-
-.news-card__time svg {
-  opacity: 0.7;
-}
-
-/* ── Thumbnail + copy ────────────────────────────── */
-.news-card__main {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  margin-bottom: 12px;
-}
-
-.news-card__image-wrap {
-  flex-shrink: 0;
-  width: 108px;
-  height: 108px;
-  border-radius: 10px;
+/* ── Full-width image ──────────────────────────────── */
+.news-card__img-wrap {
+  width: 100%;
+  height: 186px;
   overflow: hidden;
   background: var(--color-border-subtle);
 }
 
-.news-card__image {
+.news-card__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 300ms ease-out;
 }
 
-.news-card__copy {
-  flex: 1;
-  min-width: 0;
+.news-card:hover .news-card__img {
+  transform: scale(1.02);
 }
 
-/* ── Heading + stretched link ────────────────────── */
-.news-card__title {
-  margin: 0 0 6px;
-  font-size: 1.0625rem; /* 17px */
+/* ── Body ──────────────────────────────────────────── */
+.news-card__body {
+  padding: 14px 16px 8px;
+}
+
+/* ── Category chip ─────────────────────────────────── */
+.news-card__chip {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--radius-chip);
+  font-size: var(--font-size-xs);
   font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--tag-color, var(--accent-blue-start));
+  border: 1.5px solid var(--tag-color, var(--accent-blue-start));
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+/* ── Title ─────────────────────────────────────────── */
+.news-card__title {
+  margin: 0 0 8px;
+  font-size: var(--font-size-h1);
+  font-weight: 700;
+  line-height: var(--line-height-snug);
+  letter-spacing: -0.015em;
   color: var(--color-text);
 }
 
@@ -112,16 +74,12 @@
   padding: 0;
   margin: 0;
   font: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: inherit;
-  letter-spacing: inherit;
   color: inherit;
   text-align: left;
   cursor: pointer;
 }
 
-/* Stretched link — covers the whole card; action buttons sit above via z-index */
+/* Stretched link covers the full card */
 .news-card__title-btn::after {
   content: '';
   position: absolute;
@@ -139,31 +97,29 @@
   display: none;
 }
 
-.news-card__excerpt {
-  margin: 0;
-  font-size: 0.875rem; /* 14px */
-  font-weight: 400;
-  line-height: 1.5;
+/* ── Byline ────────────────────────────────────────── */
+.news-card__byline {
+  margin: 0 0 12px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
   color: var(--color-text-muted);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  line-height: 1.4;
 }
 
-/* ── Footer: source + actions ────────────────────── */
+.news-card__sep {
+  opacity: 0.4;
+}
+
+/* ── Footer ────────────────────────────────────────── */
 .news-card__footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.news-card__source {
-  margin: 0;
-  font-size: 0.75rem; /* 12px */
-  font-weight: 400;
-  color: var(--color-text-meta);
+  justify-content: flex-end;
+  margin-top: 2px;
 }
 
 /* Action buttons sit above the stretched link */
@@ -172,44 +128,10 @@
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 4px;
-}
-
-.news-card__relevance-btn {
-  min-height: var(--touch-target);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 159, 67, 0.26) 0%, rgba(255, 99, 71, 0.2) 100%);
-  color: #ffd28f;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 0 10px;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  white-space: nowrap;
-  line-height: 1;
-}
-
-.news-card__relevance-btn:hover,
-.news-card__relevance-btn:active {
-  color: #ffe2b7;
-  border-color: rgba(255, 160, 67, 0.35);
-}
-
-.news-card__relevance-level {
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
-  font-size: 11px;
-  opacity: 0.92;
+  gap: 0;
 }
 
 .news-card__icon-btn {
-  /* 44×44 touch target */
   min-width: var(--touch-target);
   min-height: var(--touch-target);
   display: grid;
@@ -217,17 +139,14 @@
   padding: 0;
   border: none;
   background: none;
-  color: var(--color-text-meta);
-  opacity: 0.6;
+  color: var(--color-text-muted);
   cursor: pointer;
   border-radius: 10px;
-  transition: color 100ms ease-out, opacity 100ms ease-out;
+  transition: color 100ms ease-out;
 }
 
-.news-card__icon-btn:hover,
-.news-card__icon-btn:active {
-  color: #fff;
-  opacity: 1;
+.news-card__icon-btn:hover {
+  color: var(--color-text);
 }
 
 .news-card__icon-btn:focus-visible {
@@ -237,50 +156,52 @@
 
 .news-card__icon-btn--active {
   color: var(--accent-blue-start);
-  opacity: 1;
 }
 
-/* ── Skeleton card ───────────────────────────────── */
+/* ── Skeleton ──────────────────────────────────────── */
 .news-card--skeleton {
   pointer-events: none;
+  box-shadow: none;
 }
 
-/* All skeleton elements share the shimmer animation */
-.news-card--skeleton .news-card__image-wrap,
-.news-card--skeleton .news-card__title,
-.news-card--skeleton .news-card__excerpt,
-.news-card--skeleton .news-card__source,
-.news-card--skeleton .news-card__tag,
-.news-card--skeleton .news-card__time {
-  border-radius: 6px;
-  color: transparent;
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.news-card__img-wrap--sk,
+.news-card__sk-chip,
+.news-card__sk-title,
+.news-card__sk-byline {
+  border-radius: 8px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.09) 50%,
-    rgba(255, 255, 255, 0.04) 75%
+    var(--color-border-subtle) 25%,
+    rgba(255,255,255,0.06) 50%,
+    var(--color-border-subtle) 75%
   );
   background-size: 200% 100%;
-  animation: skeleton-shimmer 1.4s ease infinite;
+  animation: shimmer 1.4s ease infinite;
 }
 
-/* Clamp title/excerpt widths so skeleton bars look natural */
-.news-card--skeleton .news-card__title {
-  max-width: 90%;
+.news-card__img-wrap--sk {
+  height: 186px;
+  border-radius: 0;
 }
 
-.news-card--skeleton .news-card__excerpt {
-  max-width: 100%;
+.news-card__sk-chip {
+  height: 24px;
+  width: 72px;
+  margin-bottom: 10px;
 }
 
-.news-card--skeleton .news-card__source {
-  max-width: 50%;
+.news-card__sk-title {
+  height: 20px;
+  width: 90%;
+  margin-bottom: 8px;
 }
 
-.news-card--skeleton .news-card__tag {
-  max-width: 60px;
-}
-
-.news-card--skeleton .news-card__time {
-  max-width: 48px;
+.news-card__sk-byline {
+  height: 14px;
+  width: 65%;
 }

@@ -1,63 +1,54 @@
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px var(--space-page) 8px;
   flex-shrink: 0;
-  /* Sticky so it shrinks into view as the user scrolls */
   position: sticky;
   top: 0;
   z-index: 20;
   background: var(--color-header-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding: 14px var(--space-page) 0;
 }
 
-.header__title {
-  margin: 0;
-  font-size: clamp(1.2rem, 5vw, 1.5rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--color-text);
-  line-height: var(--line-height-heading);
+/* ── Top bar: identity + actions ─────────────────── */
+.header__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
-.header__actions {
+.header__identity {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+/* ── Avatar circle ────────────────────────────────── */
 .header__avatar {
-  /* 44×44 touch target; 36px visual circle via inner sizing */
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: none;
   padding: 0;
   cursor: pointer;
   display: grid;
   place-items: center;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
   color: #fff;
   background: linear-gradient(
     135deg,
     var(--avatar-gradient-start) 0%,
     var(--avatar-gradient-end) 100%
   );
+  flex-shrink: 0;
   transition: opacity 0.15s ease-out;
 }
 
-.header__avatar:hover {
-  opacity: 0.88;
-}
-
-.header__avatar:active {
-  opacity: 0.75;
-  transform: scale(0.96);
-}
+.header__avatar:hover   { opacity: 0.88; }
+.header__avatar:active  { opacity: 0.75; transform: scale(0.96); }
 
 .header__avatar:focus-visible {
   outline: var(--focus-outline);
@@ -70,4 +61,56 @@
   border-radius: 50%;
   object-fit: cover;
   display: block;
+}
+
+/* ── Greeting text ────────────────────────────────── */
+.header__greet {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.header__greet-label {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.header__greet-name {
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* ── Right-side icon button ───────────────────────── */
+.header__icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-card);
+  color: var(--color-text-muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: color 0.12s ease, background 0.12s ease;
+}
+
+.header__icon-btn:hover {
+  color: var(--color-text);
+  background: var(--color-border-subtle);
+}
+
+.header__icon-btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+/* ── Search row (below greeting bar) ─────────────── */
+.header__search-row {
+  padding-bottom: 12px;
 }

@@ -1,7 +1,7 @@
 .category-chips {
   display: flex;
   gap: 8px;
-  padding: 8px var(--space-page) 16px;
+  padding: 4px var(--space-page) 16px;
   overflow-x: auto;
   flex-shrink: 0;
   scrollbar-width: none;
@@ -16,24 +16,23 @@
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  /* 44px minimum touch target */
-  min-height: var(--touch-target);
+  height: 36px;
   padding: 0 16px;
   border-radius: var(--radius-chip);
-  border: 1px solid var(--color-chip-border);
-  font-family: inherit;
-  font-size: 0.8125rem; /* 13px */
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  border: 1.5px solid var(--color-chip-border);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.01em;
   cursor: pointer;
   color: var(--color-text-muted);
-  background: var(--color-chip-inactive);
-  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+  background: transparent;
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+  white-space: nowrap;
 }
 
 .category-chips__chip:hover {
-  border-color: #4b5563;
+  border-color: var(--color-text-muted);
   color: var(--color-text);
 }
 
@@ -46,28 +45,28 @@
   outline-offset: var(--focus-offset);
 }
 
+/* Active: dark fill — matches reference's filled "All Category" pill */
 .category-chips__chip--active {
-  background: var(--accent-blue-start);
-  border-color: var(--accent-blue-start);
-  color: #fff;
-  font-weight: 600;
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-bg);
+  font-weight: 700;
 }
 
 .category-chips__chip--active:hover {
-  background: var(--accent-blue-start);
-  border-color: var(--accent-blue-start);
-  color: #fff;
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-bg);
 }
 
-/* Hide text emojis — labels only */
+/* Hide emojis — text labels only */
 .category-chips__emoji {
   display: none;
 }
 
-/* Lucide icon for the "All" pill */
 .category-chips__icon {
   display: inline-flex;
   align-items: center;
-  margin-right: 3px;
-  opacity: 0.85;
+  margin-right: 5px;
+  opacity: 0.7;
 }

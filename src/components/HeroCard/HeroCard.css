@@ -1,69 +1,73 @@
 .hero-card {
   position: relative;
-  margin: 0 var(--space-page) 14px;
+  margin: 0 var(--space-page) 8px;
   border-radius: var(--radius-card);
   overflow: hidden;
   background: var(--color-card);
   border: 1px solid var(--color-border-subtle);
-  transition: transform 120ms ease-out, opacity 120ms ease-out;
+  box-shadow: var(--shadow-card);
+  transition: transform 120ms ease-out;
 }
 
 .hero-card:has(.hero-card__title-btn:active) {
-  transform: scale(0.98);
-  opacity: 0.9;
+  transform: scale(0.985);
 }
 
-/* ── Full-width hero image ────────────────────────── */
+/* ── Hero image ───────────────────────────────────── */
 .hero-card__image {
   width: 100%;
-  height: 220px;
+  height: 240px;
   object-fit: cover;
   display: block;
 }
 
-/* ── Bottom gradient: transparent → near-black ──── */
+/* ── Gradient overlay ─────────────────────────────── */
 .hero-card__overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to bottom,
-    transparent 28%,
-    rgba(0, 0, 0, 0.88) 100%
+    transparent 22%,
+    rgba(0, 0, 0, 0.92) 100%
   );
   pointer-events: none;
 }
 
-/* ── Overlaid content ────────────────────────────── */
+/* ── Content overlay ──────────────────────────────── */
 .hero-card__content {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 16px;
+  padding: 20px 16px 16px;
 }
 
-/* ── Category tag: top-left badge ────────────────── */
+/* ── Category tag ─────────────────────────────────── */
 .hero-card__tag {
-  display: inline-block;
-  font-size: 0.6875rem; /* 11px */
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--radius-chip);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--tag-color, var(--accent-blue-start));
-  margin-bottom: 6px;
+  color: #fff;
+  background: rgba(10, 132, 255, 0.88);
+  margin-bottom: 8px;
 }
 
-/* ── Headline ────────────────────────────────────── */
+/* ── Headline ─────────────────────────────────────── */
 .hero-card__title {
-  margin: 0 0 8px;
-  font-size: 1.375rem; /* 22px */
+  margin: 0 0 10px;
+  font-size: 1.375rem;
   font-weight: 800;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  line-height: var(--line-height-snug);
+  letter-spacing: -0.022em;
   color: #fff;
 }
 
-/* Stretched-link covers the full card */
 .hero-card__title-btn {
   display: block;
   width: 100%;
@@ -72,10 +76,6 @@
   padding: 0;
   margin: 0;
   font: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: inherit;
-  letter-spacing: inherit;
   color: inherit;
   text-align: left;
   cursor: pointer;
@@ -97,7 +97,7 @@
   display: none;
 }
 
-/* ── Footer: source + actions ────────────────────── */
+/* ── Footer ───────────────────────────────────────── */
 .hero-card__footer {
   display: flex;
   align-items: center;
@@ -107,38 +107,36 @@
 
 .hero-card__meta {
   margin: 0;
-  font-size: 0.75rem; /* 12px */
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.55);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
 }
 
-/* Action buttons sit above the stretched link */
 .hero-card__actions {
   position: relative;
   z-index: 2;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
 .hero-card__relevance-btn {
   min-height: var(--touch-target);
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 159, 67, 0.35) 0%, rgba(255, 99, 71, 0.28) 100%);
-  color: #ffe2b7;
-  padding: 0 11px;
+  background: rgba(255, 149, 0, 0.25);
+  color: #ffd580;
+  padding: 0 12px;
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 500;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
   cursor: pointer;
 }
 
 .hero-card__icon-btn {
-  /* 44×44 touch target */
   min-width: var(--touch-target);
   min-height: var(--touch-target);
   display: grid;
@@ -146,18 +144,13 @@
   padding: 0;
   border: none;
   background: none;
-  color: rgba(255, 255, 255, 0.6);
-  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.65);
   cursor: pointer;
   border-radius: 10px;
-  transition: color 100ms ease-out, opacity 100ms ease-out;
+  transition: color 100ms ease-out;
 }
 
-.hero-card__icon-btn:hover,
-.hero-card__icon-btn:active {
-  color: #fff;
-  opacity: 1;
-}
+.hero-card__icon-btn:hover  { color: #fff; }
 
 .hero-card__icon-btn:focus-visible {
   outline: var(--focus-outline);
@@ -165,6 +158,5 @@
 }
 
 .hero-card__icon-btn--active {
-  color: var(--accent-blue-start);
-  opacity: 1;
+  color: #5bc0ff;
 }

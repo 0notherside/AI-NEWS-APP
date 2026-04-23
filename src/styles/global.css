@@ -49,9 +49,9 @@ body {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  /* 68px = nav content height (8px top-pad + ~44px items + 8px bottom-pad + 8px buffer)
-     env() adds the OS safe-area so content clears the nav on notch/Dynamic-Island devices */
-  padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  /* 80px = nav height (labels + icons + padding) + 8px buffer
+     env() adds the OS safe-area for notch/Dynamic-Island devices */
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   -webkit-overflow-scrolling: touch;
 }
 
