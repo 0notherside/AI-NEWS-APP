@@ -1,4 +1,4 @@
-import { ArrowLeft, BadgeCheck, Bell, Bookmark, Share2 } from 'lucide-react'
+import { AlignJustify, ArrowLeft, Bell, Bookmark, Share2 } from 'lucide-react'
 import type { FeedArticle } from '../../data/feed'
 import { shareArticle } from '../../lib/shareArticle'
 import './ArticleDetailsScreen.css'
@@ -21,124 +21,142 @@ export function ArticleDetailsScreen({
   onSetReminder,
 }: ArticleDetailsScreenProps) {
   return (
-    <article className="article-details" aria-label={article.title}>
-      <section className="article-details__hero-shell">
+    <article className="ad" aria-label={article.title}>
+
+      {/* ── Hero image ──────────────────────────────── */}
+      <div className="ad__hero">
         <img
-          className="article-details__hero"
+          className="ad__hero-img"
           src={article.imageUrl}
-          alt={`Hero image for: ${article.title}`}
-          loading="lazy"
+          alt=""
+          loading="eager"
           decoding="async"
         />
-        <div className="article-details__hero-overlay" aria-hidden />
 
-        <div className="article-details__top-actions">
+        {/* Top navigation buttons */}
+        <div className="ad__top-bar">
           <button
             type="button"
-            className="article-details__circle-btn"
-            aria-label="Back to feed"
+            className="ad__circle-btn"
+            aria-label="Back"
             onClick={onBack}
           >
-            <ArrowLeft size={20} strokeWidth={2} aria-hidden />
+            <ArrowLeft size={18} strokeWidth={2.2} aria-hidden />
           </button>
 
-          <div className="article-details__top-actions-right">
+          <div className="ad__top-right">
             <button
               type="button"
-              className={`article-details__circle-btn${isReminded ? ' article-details__circle-btn--active' : ''}`}
+              className={`ad__circle-btn${isReminded ? ' ad__circle-btn--active' : ''}`}
               aria-label={isReminded ? 'Reminder set' : 'Set reminder'}
               aria-pressed={isReminded}
               onClick={() => onSetReminder?.(article)}
             >
-              <Bell size={19} strokeWidth={2} aria-hidden />
+              <Bell size={17} strokeWidth={2} aria-hidden />
             </button>
             <button
               type="button"
-              className={`article-details__circle-btn${isSaved ? ' article-details__circle-btn--active' : ''}`}
-              aria-label={isSaved ? 'Remove from saved' : 'Save article'}
+              className={`ad__circle-btn${isSaved ? ' ad__circle-btn--active' : ''}`}
+              aria-label={isSaved ? 'Remove from saved' : 'Save'}
               aria-pressed={isSaved}
               onClick={() => onToggleSave?.(article)}
             >
-              <Bookmark size={19} strokeWidth={2} aria-hidden />
+              <Bookmark size={17} strokeWidth={2} aria-hidden />
             </button>
             <button
               type="button"
-              className="article-details__circle-btn"
-              aria-label="Share article"
-              onClick={() => {
-                void shareArticle(article)
-              }}
+              className="ad__circle-btn"
+              aria-label="More options"
             >
-              <Share2 size={20} strokeWidth={2} aria-hidden />
+              <AlignJustify size={17} strokeWidth={2} aria-hidden />
             </button>
           </div>
         </div>
+      </div>
 
-        <div className="article-details__hero-copy">
-          <span className="article-details__category-pill">{article.categoryLabel}</span>
-          <h1 className="article-details__title">{article.title}</h1>
-          <p className="article-details__meta">
-            Trending
-            <span aria-hidden> · </span>
-            <time aria-label={`Published ${article.timeAgo}`}>{article.timeAgo}</time>
-          </p>
+      {/* ── Content sheet ───────────────────────────── */}
+      <div className="ad__sheet">
+
+        {/* Category tags */}
+        <div className="ad__tags">
+          <span className="ad__tag">{article.categoryLabel}</span>
+          <span className="ad__tag">{article.source}</span>
         </div>
-      </section>
 
-      <section className="article-details__sheet" aria-label="Article details">
-        <header className="article-details__publisher">
-          <span className="article-details__publisher-logo" aria-hidden>
-            {article.source.slice(0, 2).toUpperCase()}
-          </span>
-          <div className="article-details__publisher-copy">
-            <p className="article-details__publisher-name">
-              {article.source}
-              <BadgeCheck size={14} strokeWidth={2.4} aria-hidden />
-            </p>
-          </div>
-        </header>
+        {/* Title */}
+        <h1 className="ad__title">{article.title}</h1>
 
-        <p className="article-details__lead">{article.details.summary}</p>
+        {/* Byline */}
+        <p className="ad__byline">
+          <span className="ad__byline-author">by {article.source}</span>
+          <span className="ad__sep" aria-hidden>·</span>
+          <span>{article.readMinutes} min read</span>
+          <span className="ad__sep" aria-hidden>·</span>
+          <time>{article.timeAgo}</time>
+        </p>
 
-        <section className="article-details__section" aria-label="What is new">
-          <h2 className="article-details__heading">What&rsquo;s new</h2>
-          <p className="article-details__text">{article.details.whatsNew}</p>
+        {/* Lead / summary */}
+        <p className="ad__lead">{article.details.summary}</p>
+
+        {/* What's new */}
+        <section className="ad__section">
+          <h2 className="ad__section-heading">What&rsquo;s new</h2>
+          <p className="ad__text">{article.details.whatsNew}</p>
         </section>
 
-        <section className="article-details__section" aria-label="Key information">
-          <h2 className="article-details__heading">Key information</h2>
-          <ul className="article-details__list">
-            {article.details.keyPoints.map((point, index) => (
-              <li key={`${article.id}-point-${index}`}>{point}</li>
+        {/* Key points */}
+        <section className="ad__section">
+          <h2 className="ad__section-heading">Key points</h2>
+          <ul className="ad__list">
+            {article.details.keyPoints.map((point, i) => (
+              <li key={`${article.id}-kp-${i}`}>{point}</li>
             ))}
           </ul>
         </section>
 
-        <section className="article-details__section" aria-label="Pricing">
-          <h2 className="article-details__heading">Pricing</h2>
-          <ul className="article-details__list">
-            {article.details.pricing.map((point, index) => (
-              <li key={`${article.id}-pricing-${index}`}>{point}</li>
+        {/* Pricing */}
+        <section className="ad__section">
+          <h2 className="ad__section-heading">Pricing</h2>
+          <ul className="ad__list">
+            {article.details.pricing.map((point, i) => (
+              <li key={`${article.id}-pr-${i}`}>{point}</li>
             ))}
           </ul>
         </section>
 
-        <section className="article-details__section" aria-label="Screenshots">
-          <h2 className="article-details__heading">Screenshots</h2>
-          <div className="article-details__shots">
-            {article.details.screenshots.map((url, index) => (
-              <img
-                key={`${article.id}-shot-${index}`}
-                className="article-details__shot"
-                src={url}
-                alt={`Screenshot ${index + 1} of ${article.title}`}
-                loading="lazy"
-                decoding="async"
-              />
-            ))}
-          </div>
-        </section>
-      </section>
+        {/* Screenshots */}
+        {article.details.screenshots.length > 0 && (
+          <section className="ad__section">
+            <h2 className="ad__section-heading">Screenshots</h2>
+            <div className="ad__shots">
+              {article.details.screenshots.map((url, i) => (
+                <img
+                  key={`${article.id}-shot-${i}`}
+                  className="ad__shot"
+                  src={url}
+                  alt={`Screenshot ${i + 1}`}
+                  loading="lazy"
+                  decoding="async"
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Share row */}
+        <div className="ad__share-row">
+          <button
+            type="button"
+            className="ad__share-btn"
+            aria-label="Share article"
+            onClick={() => void shareArticle(article)}
+          >
+            <Share2 size={16} strokeWidth={2} aria-hidden />
+            Share article
+          </button>
+        </div>
+
+      </div>
     </article>
   )
 }
