@@ -7,27 +7,38 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--color-border-subtle);
-  padding: 14px var(--space-page) 0;
+  padding: 12px var(--space-page);
 }
 
-/* ── Top bar: identity + actions ─────────────────── */
+/* ── Single bar: identity ←→ search + gear ───────── */
 .header__bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.header__identity {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* ── Avatar circle ────────────────────────────────── */
+/* ── Left: avatar + greeting ─────────────────────── */
+.header__identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Right: search + gear ────────────────────────── */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/* ── Avatar circle ───────────────────────────────── */
 .header__avatar {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: none;
   padding: 0;
@@ -63,7 +74,7 @@
   display: block;
 }
 
-/* ── Greeting text ────────────────────────────────── */
+/* ── Greeting text ───────────────────────────────── */
 .header__greet {
   display: flex;
   flex-direction: column;
@@ -86,10 +97,11 @@
   letter-spacing: -0.01em;
 }
 
-/* ── Right-side icon button ───────────────────────── */
+/* ── Gear icon button ────────────────────────────── */
 .header__icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
   border-radius: 12px;
   border: 1px solid var(--color-border-subtle);
   background: var(--color-card);
@@ -108,9 +120,4 @@
 .header__icon-btn:focus-visible {
   outline: var(--focus-outline);
   outline-offset: var(--focus-offset);
-}
-
-/* ── Search row (below greeting bar) ─────────────── */
-.header__search-row {
-  padding-bottom: 12px;
 }

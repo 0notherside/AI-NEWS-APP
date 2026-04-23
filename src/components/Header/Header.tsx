@@ -24,6 +24,7 @@ export function Header({
   return (
     <header className="header">
       <div className="header__bar">
+        {/* Left: avatar + greeting */}
         <div className="header__identity">
           <button
             type="button"
@@ -43,21 +44,21 @@ export function Header({
           </div>
         </div>
 
-        <button
-          type="button"
-          className="header__icon-btn"
-          aria-label="Open profile settings"
-          onClick={onProfileClick}
-        >
-          <Settings size={20} strokeWidth={1.8} aria-hidden />
-        </button>
-      </div>
-
-      {hasSearch && (
-        <div className="header__search-row">
-          <SearchBar value={searchValue} onChange={onSearchChange} />
+        {/* Right: search bar + gear icon */}
+        <div className="header__actions">
+          {hasSearch && (
+            <SearchBar value={searchValue} onChange={onSearchChange} variant="inline" />
+          )}
+          <button
+            type="button"
+            className="header__icon-btn"
+            aria-label="Open profile settings"
+            onClick={onProfileClick}
+          >
+            <Settings size={18} strokeWidth={1.8} aria-hidden />
+          </button>
         </div>
-      )}
+      </div>
     </header>
   )
 }
