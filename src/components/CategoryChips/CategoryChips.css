@@ -18,8 +18,8 @@
   align-items: center;
   gap: 6px;
   height: 40px;
-  padding: 0 18px;
-  border-radius: 999px;
+  padding: 0 16px;
+  border-radius: 12px;
   border: 1.5px solid var(--color-chip-border);
   background: transparent;
   font-family: var(--font-sans);
@@ -36,25 +36,19 @@
   color: var(--color-text);
 }
 
-.category-chips__chip:active  { transform: scale(0.95); }
+.category-chips__chip:active { transform: scale(0.95); }
 
 .category-chips__chip:focus-visible {
   outline: var(--focus-outline);
   outline-offset: var(--focus-offset);
 }
 
-/* Active: white solid fill, dark text — matches reference screenshot */
+/* Active: white solid fill, dark text */
 .category-chips__chip--active {
   background: #ffffff;
   border-color: #ffffff;
   color: #000000;
   font-weight: 700;
-}
-
-[data-theme="dark"] .category-chips__chip--active {
-  background: #ffffff;
-  border-color: #ffffff;
-  color: #000000;
 }
 
 .category-chips__chip--active:hover {
