@@ -1,7 +1,7 @@
 .category-chips {
   display: flex;
   gap: 8px;
-  padding: 0 var(--space-page) 20px;
+  padding: 14px var(--space-page) 16px;
   overflow-x: auto;
   flex-shrink: 0;
   scrollbar-width: none;
