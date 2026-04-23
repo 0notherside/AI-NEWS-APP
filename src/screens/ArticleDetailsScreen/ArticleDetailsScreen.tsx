@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { AlignJustify, ArrowLeft, Bell, Bookmark, Share2 } from 'lucide-react'
 import type { FeedArticle } from '../../data/feed'
 import { shareArticle } from '../../lib/shareArticle'
@@ -20,6 +21,8 @@ export function ArticleDetailsScreen({
   isReminded,
   onSetReminder,
 }: ArticleDetailsScreenProps) {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
     <article className="ad" aria-label={article.title}>
 
@@ -33,7 +36,6 @@ export function ArticleDetailsScreen({
           decoding="async"
         />
 
-        {/* Top navigation buttons */}
         <div className="ad__top-bar">
           <button
             type="button"
@@ -44,49 +46,27 @@ export function ArticleDetailsScreen({
             <ArrowLeft size={18} strokeWidth={2.2} aria-hidden />
           </button>
 
-          <div className="ad__top-right">
-            <button
-              type="button"
-              className={`ad__circle-btn${isReminded ? ' ad__circle-btn--active' : ''}`}
-              aria-label={isReminded ? 'Reminder set' : 'Set reminder'}
-              aria-pressed={isReminded}
-              onClick={() => onSetReminder?.(article)}
-            >
-              <Bell size={17} strokeWidth={2} aria-hidden />
-            </button>
-            <button
-              type="button"
-              className={`ad__circle-btn${isSaved ? ' ad__circle-btn--active' : ''}`}
-              aria-label={isSaved ? 'Remove from saved' : 'Save'}
-              aria-pressed={isSaved}
-              onClick={() => onToggleSave?.(article)}
-            >
-              <Bookmark size={17} strokeWidth={2} aria-hidden />
-            </button>
-            <button
-              type="button"
-              className="ad__circle-btn"
-              aria-label="More options"
-            >
-              <AlignJustify size={17} strokeWidth={2} aria-hidden />
-            </button>
-          </div>
+          <button
+            type="button"
+            className="ad__circle-btn"
+            aria-label="Article actions"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(true)}
+          >
+            <AlignJustify size={17} strokeWidth={2} aria-hidden />
+          </button>
         </div>
       </div>
 
       {/* ── Content sheet ───────────────────────────── */}
       <div className="ad__sheet">
-
-        {/* Category tags */}
         <div className="ad__tags">
           <span className="ad__tag">{article.categoryLabel}</span>
           <span className="ad__tag">{article.source}</span>
         </div>
 
-        {/* Title */}
         <h1 className="ad__title">{article.title}</h1>
 
-        {/* Byline */}
         <p className="ad__byline">
           <span className="ad__byline-author">by {article.source}</span>
           <span className="ad__sep" aria-hidden>·</span>
@@ -95,16 +75,13 @@ export function ArticleDetailsScreen({
           <time>{article.timeAgo}</time>
         </p>
 
-        {/* Lead / summary */}
         <p className="ad__lead">{article.details.summary}</p>
 
-        {/* What's new */}
         <section className="ad__section">
-          <h2 className="ad__section-heading">What&rsquo;s new</h2>
+          <h2 className="ad__section-heading">What's new</h2>
           <p className="ad__text">{article.details.whatsNew}</p>
         </section>
 
-        {/* Key points */}
         <section className="ad__section">
           <h2 className="ad__section-heading">Key points</h2>
           <ul className="ad__list">
@@ -114,7 +91,6 @@ export function ArticleDetailsScreen({
           </ul>
         </section>
 
-        {/* Pricing */}
         <section className="ad__section">
           <h2 className="ad__section-heading">Pricing</h2>
           <ul className="ad__list">
@@ -124,7 +100,6 @@ export function ArticleDetailsScreen({
           </ul>
         </section>
 
-        {/* Screenshots */}
         {article.details.screenshots.length > 0 && (
           <section className="ad__section">
             <h2 className="ad__section-heading">Screenshots</h2>
@@ -142,21 +117,70 @@ export function ArticleDetailsScreen({
             </div>
           </section>
         )}
-
-        {/* Share row */}
-        <div className="ad__share-row">
-          <button
-            type="button"
-            className="ad__share-btn"
-            aria-label="Share article"
-            onClick={() => void shareArticle(article)}
-          >
-            <Share2 size={16} strokeWidth={2} aria-hidden />
-            Share article
-          </button>
-        </div>
-
       </div>
+
+      {/* ── Action sheet ────────────────────────────── */}
+      {menuOpen && (
+        <>
+          <div
+            className="ad__backdrop"
+            aria-hidden
+            onClick={() => setMenuOpen(false)}
+          />
+          <div className="ad__action-sheet" role="dialog" aria-label="Article actions">
+            <div className="ad__action-sheet-handle" aria-hidden />
+
+            <button
+              type="button"
+              className={`ad__action-item${isReminded ? ' ad__action-item--active' : ''}`}
+              onClick={() => { onSetReminder?.(article); setMenuOpen(false) }}
+            >
+              <span className="ad__action-icon">
+                <Bell size={20} strokeWidth={1.8} aria-hidden />
+              </span>
+              <span className="ad__action-label">
+                {isReminded ? 'Remove reminder' : 'Set reminder'}
+              </span>
+            </button>
+
+            <div className="ad__action-divider" />
+
+            <button
+              type="button"
+              className={`ad__action-item${isSaved ? ' ad__action-item--active' : ''}`}
+              onClick={() => { onToggleSave?.(article); setMenuOpen(false) }}
+            >
+              <span className="ad__action-icon">
+                <Bookmark size={20} strokeWidth={1.8} aria-hidden />
+              </span>
+              <span className="ad__action-label">
+                {isSaved ? 'Remove from saved' : 'Save article'}
+              </span>
+            </button>
+
+            <div className="ad__action-divider" />
+
+            <button
+              type="button"
+              className="ad__action-item"
+              onClick={() => { void shareArticle(article); setMenuOpen(false) }}
+            >
+              <span className="ad__action-icon">
+                <Share2 size={20} strokeWidth={1.8} aria-hidden />
+              </span>
+              <span className="ad__action-label">Share article</span>
+            </button>
+
+            <button
+              type="button"
+              className="ad__action-cancel"
+              onClick={() => setMenuOpen(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </>
+      )}
     </article>
   )
 }
