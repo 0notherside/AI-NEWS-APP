@@ -32,7 +32,6 @@ export function NewsCard({
       <article className="news-card news-card--skeleton" aria-hidden>
         <div className="news-card__img-wrap news-card__img-wrap--sk" />
         <div className="news-card__body">
-          <div className="news-card__sk-chip" />
           <div className="news-card__sk-title" />
           <div className="news-card__sk-byline" />
         </div>
@@ -53,8 +52,8 @@ export function NewsCard({
       onPointerLeave={() => setPressed(false)}
       onPointerCancel={() => setPressed(false)}
     >
-      {/* ── Full-width image ──────────────────────────── */}
-      <div className="news-card__img-wrap" aria-hidden>
+      {/* ── Image with overlaid chip + actions ─────── */}
+      <div className="news-card__img-wrap">
         <img
           className="news-card__img"
           src={article.imageUrl}
@@ -62,12 +61,46 @@ export function NewsCard({
           loading="lazy"
           decoding="async"
         />
+
+        {/* Bottom overlay bar: chip left, actions right */}
+        <div className="news-card__img-overlay" aria-hidden={false}>
+          {/* Category chip — bottom-left, solid filled */}
+          <span className="news-card__chip">{article.categoryLabel}</span>
+
+          {/* Action buttons — bottom-right, frosted backdrop */}
+          <div className="news-card__actions" role="group" aria-label="Article actions">
+            <button
+              type="button"
+              className={`news-card__icon-btn${isReminded ? ' news-card__icon-btn--active' : ''}`}
+              aria-label={isReminded ? 'Reminder set' : 'Set reminder'}
+              aria-pressed={isReminded}
+              onClick={(e) => { e.stopPropagation(); onSetReminder?.(article) }}
+            >
+              <Bell size={17} strokeWidth={1.8} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className={`news-card__icon-btn${isSaved ? ' news-card__icon-btn--active' : ''}`}
+              aria-label={isSaved ? 'Remove from saved' : 'Save article'}
+              aria-pressed={isSaved}
+              onClick={(e) => { e.stopPropagation(); onToggleSave?.(article) }}
+            >
+              <Bookmark size={17} strokeWidth={1.8} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="news-card__icon-btn"
+              aria-label="Share article"
+              onClick={(e) => { e.stopPropagation(); void shareArticle(article) }}
+            >
+              <Share2 size={17} strokeWidth={1.8} aria-hidden />
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* ── Body ─────────────────────────────────────── */}
+      {/* ── Text body: title + byline ───────────────── */}
       <div className="news-card__body">
-        <span className="news-card__chip">{article.categoryLabel}</span>
-
         <h2 className="news-card__title">
           {onOpen ? (
             <button
@@ -89,37 +122,6 @@ export function NewsCard({
           <span className="news-card__sep" aria-hidden>·</span>
           <time>{article.timeAgo}</time>
         </p>
-
-        <div className="news-card__footer">
-          <div className="news-card__actions" role="group" aria-label="Article actions">
-            <button
-              type="button"
-              className={`news-card__icon-btn${isReminded ? ' news-card__icon-btn--active' : ''}`}
-              aria-label={isReminded ? 'Reminder set' : 'Set reminder'}
-              aria-pressed={isReminded}
-              onClick={(e) => { e.stopPropagation(); onSetReminder?.(article) }}
-            >
-              <Bell size={18} strokeWidth={1.8} aria-hidden />
-            </button>
-            <button
-              type="button"
-              className={`news-card__icon-btn${isSaved ? ' news-card__icon-btn--active' : ''}`}
-              aria-label={isSaved ? 'Remove from saved' : 'Save article'}
-              aria-pressed={isSaved}
-              onClick={(e) => { e.stopPropagation(); onToggleSave?.(article) }}
-            >
-              <Bookmark size={18} strokeWidth={1.8} aria-hidden />
-            </button>
-            <button
-              type="button"
-              className="news-card__icon-btn"
-              aria-label="Share article"
-              onClick={(e) => { e.stopPropagation(); void shareArticle(article) }}
-            >
-              <Share2 size={18} strokeWidth={1.8} aria-hidden />
-            </button>
-          </div>
-        </div>
       </div>
     </article>
   )
