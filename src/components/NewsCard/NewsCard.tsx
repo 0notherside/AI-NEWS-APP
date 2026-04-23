@@ -118,8 +118,6 @@ export function NewsCard({
         <p className="news-card__byline">
           <span>by {article.source}</span>
           <span className="news-card__sep" aria-hidden>·</span>
-          <span>{article.readMinutes} min read</span>
-          <span className="news-card__sep" aria-hidden>·</span>
           <time>{article.timeAgo}</time>
         </p>
       </div>
