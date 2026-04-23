@@ -348,40 +348,61 @@ export function FeedScreen() {
             />
           ) : tab === 'community' ? (
             loading ? (
-              Array.from({ length: SKELETON_COUNT }, (_, i) => (
-                <NewsCard key={`sk-community-${i}`} skeleton />
-              ))
-            ) : communityArticles.length === 0 && communityRender.length === 0 ? (
-              <section className="community-empty" aria-label="Community threshold info">
-                <p className="community-empty__eyebrow">Community Top Stories</p>
-                <h2 className="community-empty__title">Not enough reactions yet</h2>
-                <p className="community-empty__text">
-                  Stories appear here after reaching at least{' '}
-                  <strong>{COMMUNITY_MIN_RELEVANCE} reactions</strong>.
-                </p>
-              </section>
-            ) : (
-              <div className="community-list">
-                {communityRender.map((item) => (
-                  <div
-                    key={`community-${item.article.id}`}
-                    className={`community-list__item community-list__item--${item.phase}`}
-                  >
-                    <NewsCard
-                      article={item.article}
-                      onOpen={(a) => {
-                        markOpened(a.id)
-                        setSelectedArticle(a)
-                      }}
-                      isSaved={isSaved(item.article.id)}
-                      onToggleSave={(a) => toggleSaved(a)}
-                      relevance={getRelevance(item.article.id)}
-                      onBoostRelevance={(a) => boostRelevance(a.id)}
-                      isReminded={hasArticleReminder(item.article.id)}
-                      onSetReminder={openReminderComposer}
-                    />
-                  </div>
+              <div className="community-wrap">
+                <div className="community-header">
+                  <h2 className="community-header__title">Top Stories</h2>
+                  <span className="community-header__sub">Ranked by reactions</span>
+                </div>
+                {Array.from({ length: SKELETON_COUNT }, (_, i) => (
+                  <NewsCard key={`sk-community-${i}`} skeleton />
                 ))}
+              </div>
+            ) : communityArticles.length === 0 && communityRender.length === 0 ? (
+              <div className="community-wrap">
+                <div className="community-header">
+                  <h2 className="community-header__title">Top Stories</h2>
+                  <span className="community-header__sub">Ranked by reactions</span>
+                </div>
+                <section className="community-empty" aria-label="Community threshold info">
+                  <span className="community-empty__icon">🔥</span>
+                  <h3 className="community-empty__title">No top stories yet</h3>
+                  <p className="community-empty__text">
+                    React to articles in the feed — stories with{' '}
+                    <strong>{COMMUNITY_MIN_RELEVANCE}+ reactions</strong> appear here.
+                  </p>
+                </section>
+              </div>
+            ) : (
+              <div className="community-wrap">
+                <div className="community-header">
+                  <h2 className="community-header__title">Top Stories</h2>
+                  <span className="community-header__sub">Ranked by reactions</span>
+                </div>
+                <div className="community-list">
+                  {communityRender.map((item, index) => (
+                    <div
+                      key={`community-${item.article.id}`}
+                      className={`community-list__item community-list__item--${item.phase}`}
+                    >
+                      <div className="community-rank">
+                        <span className="community-rank__number">#{index + 1}</span>
+                      </div>
+                      <NewsCard
+                        article={item.article}
+                        onOpen={(a) => {
+                          markOpened(a.id)
+                          setSelectedArticle(a)
+                        }}
+                        isSaved={isSaved(item.article.id)}
+                        onToggleSave={(a) => toggleSaved(a)}
+                        relevance={getRelevance(item.article.id)}
+                        onBoostRelevance={(a) => boostRelevance(a.id)}
+                        isReminded={hasArticleReminder(item.article.id)}
+                        onSetReminder={openReminderComposer}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             )
           ) : loading ? (
