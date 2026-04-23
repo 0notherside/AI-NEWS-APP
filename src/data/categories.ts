@@ -12,6 +12,7 @@ export type CategoryId =
   | 'research'
   | 'business'
   | 'safety'
+  | 'marketing'
 
 export type ArticleCategoryId = Exclude<CategoryId, 'all'>
 
@@ -40,7 +41,8 @@ export const CATEGORY_CHIPS: CategoryChip[] = [
   { id: 'robotics', label: 'Robotics',  emoji: '🦾' },
   { id: 'research', label: 'Research',  emoji: '🔬' },
   { id: 'business', label: 'Business',  emoji: '💼' },
-  { id: 'safety',   label: 'Safety',    emoji: '🛡️' },
+  { id: 'safety',    label: 'Safety',    emoji: '🛡️' },
+  { id: 'marketing', label: 'Marketing', emoji: '📣' },
 ]
 
 export const CATEGORY_META: Record<ArticleCategoryId, CategoryMeta> = {
@@ -55,5 +57,6 @@ export const CATEGORY_META: Record<ArticleCategoryId, CategoryMeta> = {
   robotics: { label: 'ROBOTICS', emoji: '🦾', color: 'var(--category-robotics)' },
   research: { label: 'RESEARCH', emoji: '🔬', color: 'var(--category-research)' },
   business: { label: 'BUSINESS', emoji: '💼', color: 'var(--category-business)' },
-  safety:   { label: 'SAFETY',   emoji: '🛡️', color: 'var(--category-safety)'   },
+  safety:    { label: 'SAFETY',    emoji: '🛡️', color: 'var(--category-safety)'    },
+  marketing: { label: 'MARKETING', emoji: '📣', color: 'var(--category-marketing)' },
 }

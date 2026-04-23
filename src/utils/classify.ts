@@ -117,6 +117,19 @@ const RULES: Array<{ category: ArticleCategoryId; keywords: string[] }> = [
       'filter', 'retouch', 'background removal',
     ],
   },
+  {
+    category: 'marketing',
+    keywords: [
+      'marketing', 'campaign', 'ad', 'ads', 'advertising', 'copywriting',
+      'seo', 'content marketing', 'email marketing', 'social media',
+      'brand', 'branding', 'conversion', 'lead generation', 'funnel',
+      'claude plugin', 'claude for work', 'chatgpt plugin', 'gpt plugin',
+      'zapier', 'make', 'n8n', 'automation', 'crm', 'hubspot', 'salesforce',
+      'analytics', 'growth', 'influencer', 'ugc', 'product launch',
+      'anthropic for business', 'claude api marketing', 'ai marketing',
+      'personalization', 'recommendation', 'engagement', 'retention',
+    ],
+  },
 ]
 
 export function classifyArticle(title: string, excerpt: string): ArticleCategoryId {
