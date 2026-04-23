@@ -178,6 +178,64 @@
   opacity: 0.35;
 }
 
+/* ── Bottom row: fire button ───────────────────────── */
+.news-card__bottom-row {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.news-card__fire-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 11px;
+  border-radius: var(--radius-chip);
+  border: 1.5px solid var(--color-chip-border);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  /* Must sit above the stretched-link */
+  position: relative;
+  z-index: 1;
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.news-card__fire-btn:hover {
+  border-color: #f97316;
+  background: rgba(249, 115, 22, 0.07);
+  color: #f97316;
+}
+
+.news-card__fire-btn:active {
+  transform: scale(0.94);
+}
+
+.news-card__fire-btn--lit {
+  border-color: rgba(249, 115, 22, 0.55);
+  background: rgba(249, 115, 22, 0.09);
+  color: #f97316;
+}
+
+.news-card__fire-btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+.news-card__fire-emoji {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.news-card__fire-count {
+  font-variant-numeric: tabular-nums;
+  min-width: 10px;
+}
+
 /* ── Skeleton ──────────────────────────────────────── */
 .news-card--skeleton {
   pointer-events: none;

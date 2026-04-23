@@ -24,6 +24,8 @@ export function NewsCard({
   onToggleSave,
   isReminded,
   onSetReminder,
+  relevance = 0,
+  onBoostRelevance,
 }: NewsCardProps) {
   const [pressed, setPressed] = useState(false)
 
@@ -120,6 +122,18 @@ export function NewsCard({
           <span className="news-card__sep" aria-hidden>·</span>
           <time>{article.timeAgo}</time>
         </p>
+
+        <div className="news-card__bottom-row">
+          <button
+            type="button"
+            className={`news-card__fire-btn${relevance > 0 ? ' news-card__fire-btn--lit' : ''}`}
+            aria-label={`${relevance} reactions. Boost this article`}
+            onClick={(e) => { e.stopPropagation(); onBoostRelevance?.(article) }}
+          >
+            <span className="news-card__fire-emoji" aria-hidden>🔥</span>
+            <span className="news-card__fire-count">{relevance}</span>
+          </button>
+        </div>
       </div>
     </article>
   )
