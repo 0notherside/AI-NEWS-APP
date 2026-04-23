@@ -3,6 +3,7 @@ import { BottomNav } from '../../components/BottomNav/BottomNav'
 import { CategoryChips } from '../../components/CategoryChips/CategoryChips'
 import { Header } from '../../components/Header/Header'
 import { NewsCard } from '../../components/NewsCard/NewsCard'
+import { SearchBar } from '../../components/SearchBar/SearchBar'
 import type { CategoryId } from '../../data/categories'
 import type { FeedArticle } from '../../data/feed'
 import { useNewsSettings } from '../../hooks/useNewsSettings'
@@ -39,6 +40,7 @@ export function FeedScreen() {
   const [communityCategory, setCommunityCategory] = useState<CategoryId>('all')
   const [feedCategory, setFeedCategory] = useState<CategoryId>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
   const [selectedArticle, setSelectedArticle] = useState<FeedArticle | null>(null)
   const [reminderArticle, setReminderArticle] = useState<FeedArticle | null>(null)
   const [reminderReturnTab, setReminderReturnTab] = useState<NavTabId>('feed')
@@ -270,9 +272,22 @@ export function FeedScreen() {
             onProfileClick={() => setTab('profile')}
             userName={profile.name}
             avatarDataUrl={profile.avatarDataUrl}
-            searchValue={tab === 'feed' ? searchQuery : undefined}
-            onSearchChange={tab === 'feed' ? setSearchQuery : undefined}
+            searchActive={searchOpen}
+            onSearchClick={() => {
+              setSearchOpen((o) => {
+                if (o) setSearchQuery('')
+                return !o
+              })
+            }}
           />
+          {tab === 'feed' && searchOpen && (
+            <div className="feed-search-bar">
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+              />
+            </div>
+          )}
           {tab === 'feed' && (
             <div
               className="pull-to-refresh"
