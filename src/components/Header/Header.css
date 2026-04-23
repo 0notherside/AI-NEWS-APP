@@ -106,30 +106,26 @@
   height: 38px;
   flex-shrink: 0;
   border-radius: 12px;
-  border: none;
-  color: #ffffff;
+  border: 1.5px solid var(--color-chip-border);
+  background: transparent;
+  color: var(--color-text-muted);
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: opacity 0.12s ease, transform 0.12s ease;
+  transition: color 0.12s ease, background 0.12s ease, border-color 0.12s ease;
 }
 
-/* Search button — solid blue */
-.header__icon-btn:nth-of-type(1) {
-  background: #0a84ff;
+.header__icon-btn:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
 }
 
-/* Settings button — solid purple */
-.header__icon-btn:nth-of-type(2) {
-  background: #bf5af2;
-}
+.header__icon-btn:active { transform: scale(0.92); }
 
-.header__icon-btn:hover  { opacity: 0.85; }
-.header__icon-btn:active { transform: scale(0.92); opacity: 0.75; }
-
-/* Active (search open) — slightly dimmed to signal state */
 .header__icon-btn--active {
-  opacity: 0.7;
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-bg);
 }
 
 .header__icon-btn:focus-visible {
