@@ -10,30 +10,15 @@ interface SearchBarProps {
 export function SearchBar({ value, onChange, variant = 'default' }: SearchBarProps) {
   return (
     <div className={`search-bar${variant === 'inline' ? ' search-bar--inline' : ''}`}>
-      <svg
-        className="search-bar__icon"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden
-      >
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
       <input
         className="search-bar__input"
         type="search"
-        placeholder="Search AI news"
+        placeholder="Search for news"
         aria-label="Search stories"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
-      {value.length > 0 && (
+      {value.length > 0 ? (
         <button
           type="button"
           className="search-bar__clear"
@@ -42,6 +27,14 @@ export function SearchBar({ value, onChange, variant = 'default' }: SearchBarPro
         >
           <X size={14} strokeWidth={2.5} aria-hidden />
         </button>
+      ) : (
+        <span className="search-bar__icon" aria-hidden>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </span>
       )}
     </div>
   )

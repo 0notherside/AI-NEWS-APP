@@ -1,7 +1,7 @@
 .category-chips {
   display: flex;
   gap: 8px;
-  padding: 4px var(--space-page) 16px;
+  padding: 0 var(--space-page) 20px;
   overflow-x: auto;
   flex-shrink: 0;
   scrollbar-width: none;
@@ -16,19 +16,19 @@
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  height: 36px;
-  padding: 0 16px;
+  gap: 5px;
+  height: 38px;
+  padding: 0 18px;
   border-radius: var(--radius-chip);
   border: 1.5px solid var(--color-chip-border);
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   font-weight: 600;
-  letter-spacing: 0.01em;
   cursor: pointer;
   color: var(--color-text-muted);
   background: transparent;
-  transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
   white-space: nowrap;
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
 }
 
 .category-chips__chip:hover {
@@ -37,7 +37,7 @@
 }
 
 .category-chips__chip:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
 }
 
 .category-chips__chip:focus-visible {
@@ -45,7 +45,7 @@
   outline-offset: var(--focus-offset);
 }
 
-/* Active: dark fill — matches reference's filled "All Category" pill */
+/* Active: dark fill — matches reference */
 .category-chips__chip--active {
   background: var(--color-text);
   border-color: var(--color-text);
@@ -59,14 +59,7 @@
   color: var(--color-bg);
 }
 
-/* Hide emojis — text labels only */
-.category-chips__emoji {
-  display: none;
-}
-
-.category-chips__icon {
-  display: inline-flex;
-  align-items: center;
-  margin-right: 5px;
-  opacity: 0.7;
+.category-chips__fire {
+  font-size: 14px;
+  line-height: 1;
 }

@@ -66,11 +66,11 @@
 .breaking-card {
   position: relative;
   flex: 0 0 var(--slide-width);
-  height: 240px;
+  height: 244px;
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
-  border: 1px solid var(--color-border-subtle);
+  border: none;
   box-shadow: var(--shadow-card);
 }
 

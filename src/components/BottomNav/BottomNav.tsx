@@ -29,10 +29,8 @@ export function BottomNav({ active, onChange }: BottomNavProps) {
             aria-label={label}
             onClick={() => onChange(id)}
           >
-            <span className="bottom-nav__icon">
-              <Icon size={22} strokeWidth={isActive ? 2.2 : 1.8} />
-            </span>
-            <span className="bottom-nav__label">{label}</span>
+            <Icon size={24} strokeWidth={isActive ? 2.2 : 1.8} />
+            <span className="bottom-nav__dot" aria-hidden />
           </button>
         )
       })}

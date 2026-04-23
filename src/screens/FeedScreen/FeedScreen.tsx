@@ -37,6 +37,7 @@ type CommunityRenderItem = {
 export function FeedScreen() {
   const [tab, setTab] = useState<NavTabId>('feed')
   const [communityCategory, setCommunityCategory] = useState<CategoryId>('all')
+  const [feedCategory, setFeedCategory] = useState<CategoryId>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedArticle, setSelectedArticle] = useState<FeedArticle | null>(null)
   const [reminderArticle, setReminderArticle] = useState<FeedArticle | null>(null)
@@ -152,8 +153,11 @@ export function FeedScreen() {
       featuredArticle && !searchQuery
         ? [featuredArticle, ...articles]
         : articles
-    return withFeatured.filter((article) => !breakingIds.has(article.id))
-  }, [articles, breakingNews, featuredArticle, searchQuery])
+    const base = withFeatured.filter((article) => !breakingIds.has(article.id))
+    return feedCategory === 'all'
+      ? base
+      : base.filter((article) => article.categoryId === feedCategory)
+  }, [articles, breakingNews, featuredArticle, feedCategory, searchQuery])
 
   useEffect(() => {
     setBreakingIndex(0)
@@ -286,6 +290,7 @@ export function FeedScreen() {
               }}
             />
           )}
+
         </>
       )}
 
@@ -383,7 +388,7 @@ export function FeedScreen() {
                   {breakingNews.length > 0 && (
                     <section className="feed-section">
                       <div className="feed-section__header">
-                        <h2 className="feed-section__title">Breaking News</h2>
+                        <h2 className="feed-section__title">Breaking News!</h2>
                         <span className="feed-section__action">View all</span>
                       </div>
 
@@ -494,9 +499,13 @@ export function FeedScreen() {
                   {recommendationArticles.length > 0 && (
                     <section className="feed-section">
                       <div className="feed-section__header">
-                        <h2 className="feed-section__title">Recommendation</h2>
+                        <h2 className="feed-section__title">Trending Now</h2>
                         <span className="feed-section__action">View all</span>
                       </div>
+                      <CategoryChips
+                        active={feedCategory}
+                        onChange={setFeedCategory}
+                      />
                       {recommendationArticles.map((article) => (
                         <NewsCard
                           key={article.id}

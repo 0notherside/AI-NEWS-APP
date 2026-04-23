@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 export type Theme = 'dark' | 'light'
 
 const STORAGE_KEY = 'ai-pulse-theme'
-const DEFAULT: Theme = 'dark'
+const DEFAULT: Theme = 'light'
 
 function readTheme(): Theme {
   try {

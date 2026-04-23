@@ -2,10 +2,11 @@
   position: relative;
   display: flex;
   align-items: center;
-  min-height: 44px;
+  min-height: 46px;
   background: var(--color-card);
   border: 1px solid var(--color-border-subtle);
-  border-radius: 12px;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
@@ -14,23 +15,16 @@
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-/* Inline variant — used nowhere now but kept for backwards-compat */
 .search-bar--inline {
   min-height: 36px;
   border-radius: 999px;
 }
 
-.search-bar__icon {
-  flex-shrink: 0;
-  margin-left: 14px;
-  color: var(--color-text-muted);
-  pointer-events: none;
-}
-
+/* Input stretches to fill — icon is on the right */
 .search-bar__input {
   flex: 1;
-  height: 44px;
-  padding: 0 12px;
+  height: 46px;
+  padding: 0 0 0 16px;
   border: none;
   background: none;
   font-family: var(--font-sans);
@@ -48,18 +42,29 @@
 
 .search-bar__input::placeholder {
   color: var(--color-text-muted);
-  font-weight: 400;
 }
 
 .search-bar__input::-webkit-search-cancel-button {
   display: none;
 }
 
+/* Search icon — right side */
+.search-bar__icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+/* Clear button — right side when text present */
 .search-bar__clear {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  margin-right: 8px;
+  width: 32px;
+  height: 32px;
+  margin-right: 7px;
   display: grid;
   place-items: center;
   border: none;

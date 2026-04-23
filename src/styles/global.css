@@ -51,7 +51,7 @@ body {
   overflow-x: hidden;
   /* 80px = nav height (labels + icons + padding) + 8px buffer
      env() adds the OS safe-area for notch/Dynamic-Island devices */
-  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
   -webkit-overflow-scrolling: touch;
 }
 
