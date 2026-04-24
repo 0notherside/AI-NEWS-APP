@@ -184,7 +184,7 @@ export function RemindersScreen({
               type="button"
               className="reminders__prefill-clear"
               aria-label="Remove article link"
-              onClick={() => { setPendingArticleId(null); onPrefillConsumed?.() }}
+              onClick={() => { setPendingArticleId(null); setTopic(''); onPrefillConsumed?.() }}
             >
               <X size={14} strokeWidth={2.5} aria-hidden />
             </button>
