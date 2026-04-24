@@ -16,6 +16,7 @@ import type { Profile } from '../../hooks/useProfile'
 import { getInitials } from '../../hooks/useProfile'
 import type { Theme } from '../../hooks/useTheme'
 import { CATEGORY_CHIPS, CATEGORY_META } from '../../data/categories'
+import { PrivacyScreen } from '../PrivacyScreen/PrivacyScreen'
 import './ProfileScreen.css'
 
 const INTEREST_CHIPS = CATEGORY_CHIPS.filter((c) => c.id !== 'all')
@@ -60,6 +61,7 @@ export function ProfileScreen({
   const [editingName, setEditingName] = useState(false)
   const [draftName, setDraftName] = useState(profile.name)
   const [selectedInterests, setSelectedInterests] = useState<Set<string>>(readInterests)
+  const [showPrivacy, setShowPrivacy] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const toggleInterest = (id: string) => {
@@ -105,6 +107,10 @@ export function ProfileScreen({
   const handleNameKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') saveName()
     if (e.key === 'Escape') cancelEditing()
+  }
+
+  if (showPrivacy) {
+    return <PrivacyScreen onBack={() => setShowPrivacy(false)} />
   }
 
   return (
@@ -309,7 +315,7 @@ export function ProfileScreen({
             </button>
           </div>
         </div>
-        <button type="button" className="profile__row">
+        <button type="button" className="profile__row" onClick={() => setShowPrivacy(true)}>
           <span className="profile__row-icon profile__row-icon--muted" aria-hidden>
             <Shield size={18} strokeWidth={2} />
           </span>
