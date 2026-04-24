@@ -427,7 +427,6 @@ export function FeedScreen() {
                     <section className="feed-section">
                       <div className="feed-section__header">
                         <h2 className="feed-section__title">Breaking News!</h2>
-                        <span className="feed-section__action">View all</span>
                       </div>
 
                       <div
@@ -538,7 +537,6 @@ export function FeedScreen() {
                     <section className="feed-section">
                       <div className="feed-section__header">
                         <h2 className="feed-section__title">Trending Now</h2>
-                        <span className="feed-section__action">View all</span>
                       </div>
                       <CategoryChips
                         active={feedCategory}
