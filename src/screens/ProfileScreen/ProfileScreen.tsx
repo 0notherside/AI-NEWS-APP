@@ -15,23 +15,19 @@ import {
 import type { Profile } from '../../hooks/useProfile'
 import { getInitials } from '../../hooks/useProfile'
 import type { Theme } from '../../hooks/useTheme'
+import { CATEGORY_CHIPS, CATEGORY_META } from '../../data/categories'
 import './ProfileScreen.css'
 
-const INTERESTS = [
-  { label: 'Editing',  emoji: '✂️',  desc: 'Video & image tools',  color: '#bf5af2', bg: 'rgba(191,90,242,0.10)' },
-  { label: 'Music',    emoji: '🎵',  desc: 'AI audio generation',  color: '#ff375f', bg: 'rgba(255,55,95,0.10)'  },
-  { label: 'Voice',    emoji: '🎙️', desc: 'TTS & translation',    color: '#30d158', bg: 'rgba(48,209,88,0.10)'  },
-  { label: 'Code',     emoji: '💻',  desc: 'Dev tools & LLMs',     color: '#0a84ff', bg: 'rgba(10,132,255,0.10)' },
-]
+const INTEREST_CHIPS = CATEGORY_CHIPS.filter((c) => c.id !== 'all')
 
 const INTERESTS_KEY = 'ai-pulse-interests'
 
 function readInterests(): Set<string> {
   try {
     const arr = JSON.parse(localStorage.getItem(INTERESTS_KEY) ?? '[]')
-    if (Array.isArray(arr)) return new Set(arr as string[])
+    if (Array.isArray(arr) && arr.length > 0) return new Set(arr as string[])
   } catch {}
-  return new Set(INTERESTS.map((i) => i.label))
+  return new Set(INTEREST_CHIPS.map((c) => c.id))
 }
 
 interface ProfileScreenProps {
@@ -66,10 +62,10 @@ export function ProfileScreen({
   const [selectedInterests, setSelectedInterests] = useState<Set<string>>(readInterests)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const toggleInterest = (label: string) => {
+  const toggleInterest = (id: string) => {
     setSelectedInterests((prev) => {
       const next = new Set(prev)
-      next.has(label) ? next.delete(label) : next.add(label)
+      next.has(id) ? next.delete(id) : next.add(id)
       localStorage.setItem(INTERESTS_KEY, JSON.stringify([...next]))
       return next
     })
@@ -225,31 +221,32 @@ export function ProfileScreen({
       </dl>
 
       {/* ── Interests ────────────────────────────────── */}
-      <h2 className="profile__section-label">Your interests</h2>
-      <div className="interests-grid" role="group" aria-label="Your interest topics">
-        {INTERESTS.map((item) => {
-          const active = selectedInterests.has(item.label)
+      <div className="interests-header">
+        <h2 className="profile__section-label" style={{ margin: 0 }}>Your interests</h2>
+        <span className="interests-count">
+          {selectedInterests.size} of {INTEREST_CHIPS.length}
+        </span>
+      </div>
+      <div className="interests-wrap" role="group" aria-label="Toggle your interest topics">
+        {INTEREST_CHIPS.map((chip) => {
+          const active = selectedInterests.has(chip.id)
+          const meta = CATEGORY_META[chip.id as keyof typeof CATEGORY_META]
           return (
             <button
-              key={item.label}
+              key={chip.id}
               type="button"
-              className={`interest-card${active ? ' interest-card--active' : ''}`}
-              style={{
-                '--ic-color': item.color,
-                '--ic-bg': active ? item.bg : 'transparent',
-                '--ic-border': active ? item.color : 'var(--color-border-subtle)',
-              } as React.CSSProperties}
+              className={`interest-pill${active ? ' interest-pill--active' : ''}`}
+              style={{ '--ip-color': meta?.color ?? 'var(--accent-blue-start)' } as React.CSSProperties}
               aria-pressed={active}
-              onClick={() => toggleInterest(item.label)}
+              onClick={() => toggleInterest(chip.id)}
             >
+              <span className="interest-pill__emoji" aria-hidden>{chip.emoji}</span>
+              <span className="interest-pill__label">{chip.label}</span>
               {active && (
-                <span className="interest-card__check" aria-hidden>
-                  <Check size={11} strokeWidth={3} />
+                <span className="interest-pill__check" aria-hidden>
+                  <Check size={10} strokeWidth={3.5} />
                 </span>
               )}
-              <span className="interest-card__emoji" aria-hidden>{item.emoji}</span>
-              <span className="interest-card__label">{item.label}</span>
-              <span className="interest-card__desc">{item.desc}</span>
             </button>
           )
         })}
