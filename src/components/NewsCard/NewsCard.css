@@ -185,22 +185,25 @@
   opacity: 0.35;
 }
 
-/* ── Fire reaction button ──────────────────────────── */
+/* ── Fire reaction button (44px min — comfortable on touch screens) ── */
 .news-card__fire-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  height: 26px;
-  padding: 0 9px;
+  justify-content: center;
+  gap: 6px;
+  min-height: var(--touch-target);
+  min-width: var(--touch-target);
+  padding: 0 14px;
   border-radius: var(--radius-chip);
   flex-shrink: 0;
   border: 1.5px solid var(--color-chip-border);
   background: transparent;
   font-family: var(--font-sans);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: var(--color-text-muted);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   /* Must sit above the stretched-link */
   position: relative;
   z-index: 1;
@@ -235,13 +238,13 @@
 }
 
 .news-card__fire-emoji {
-  font-size: 12px;
+  font-size: 1.25rem;
   line-height: 1;
 }
 
 .news-card__fire-count {
   font-variant-numeric: tabular-nums;
-  min-width: 10px;
+  min-width: 1.25ch;
 }
 
 /* ── Skeleton ──────────────────────────────────────── */
