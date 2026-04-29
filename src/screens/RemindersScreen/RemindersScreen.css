@@ -502,6 +502,13 @@
   border-radius: 3px;
 }
 
+.reminders__item-link--invalid {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--color-text-muted) 55%, transparent);
+}
+
 .reminders__item-desc {
   margin: 0;
   font-size: var(--font-size-sm);

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { ArrowLeft, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import type { FeedArticle } from '../../data/feed'
 import type { Reminder } from '../../types/reminder'
@@ -8,6 +8,7 @@ import {
   localDateKeyFromParts,
   parseDateKey,
 } from '../../lib/dateKey'
+import { sanitizeUserUrlForHref } from '../../lib/safeUrl'
 import './RemindersScreen.css'
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const
@@ -37,13 +38,6 @@ function sortByTime(a: string, b: string): number {
   return a.localeCompare(b)
 }
 
-function linkHref(raw: string): string {
-  const t = raw.trim()
-  if (!t) return '#'
-  if (/^https?:\/\//i.test(t)) return t
-  return `https://${t}`
-}
-
 interface RemindersScreenProps {
   feed?: FeedArticle[]
   prefillArticle?: FeedArticle | null
@@ -69,27 +63,16 @@ export function RemindersScreen({
   const [selectedKey, setSelectedKey] = useState(() => localDateKey(today))
   const [time, setTime] = useState('09:00')
   const [link, setLink] = useState('')
-  const [topic, setTopic] = useState('')
+  const [topic, setTopic] = useState(prefillArticle?.title ?? '')
   const [description, setDescription] = useState('')
-  const [pendingArticleId, setPendingArticleId] = useState<string | null>(null)
+  const [pendingArticleId, setPendingArticleId] = useState<string | null>(
+    prefillArticle?.id ?? null,
+  )
 
   const formRef = useRef<HTMLFormElement>(null)
   const titleRef = useRef<HTMLInputElement>(null)
 
   const feedById = useMemo(() => new Map(feed.map((a) => [a.id, a])), [feed])
-
-  /* Pre-fill title and scroll form into view when arriving from a Bell tap */
-  useEffect(() => {
-    if (!prefillArticle) return
-    setTopic(prefillArticle.title)
-    setLink('')
-    setDescription('')
-    setPendingArticleId(prefillArticle.id)
-    setTimeout(() => {
-      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      titleRef.current?.focus()
-    }, 80)
-  }, [prefillArticle])
 
   const cells = useMemo(
     () => buildMonthCells(cursorYear, cursorMonth),
@@ -360,6 +343,7 @@ export function RemindersScreen({
           >
             {dayReminders.map((r) => {
               const article = r.articleId ? feedById.get(r.articleId) : undefined
+              const safeLink = r.link ? sanitizeUserUrlForHref(r.link) : null
               return (
                 <li key={r.id} className="reminders__item">
                   <time className="reminders__item-time" aria-label={`Time: ${r.time}`}>
@@ -384,16 +368,24 @@ export function RemindersScreen({
                       </div>
                     )}
                     {r.topic && <p className="reminders__item-topic">{r.topic}</p>}
-                    {r.link && (
-                      <a
-                        className="reminders__item-link"
-                        href={linkHref(r.link)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {r.link}
-                      </a>
-                    )}
+                    {r.link &&
+                      (safeLink ? (
+                        <a
+                          className="reminders__item-link"
+                          href={safeLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {r.link}
+                        </a>
+                      ) : (
+                        <span
+                          className="reminders__item-link reminders__item-link--invalid"
+                          title="Link is not a safe http(s) URL"
+                        >
+                          {r.link}
+                        </span>
+                      ))}
                     {r.description && (
                       <p className="reminders__item-desc">{r.description}</p>
                     )}

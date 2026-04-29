@@ -8,6 +8,19 @@ interface SavedNewsItem {
   savedAt: number
 }
 
+function normalizeSavedItems(
+  items: SavedNewsItem[],
+  retentionDays: number,
+  liveById: Map<string, FeedArticle>,
+): SavedNewsItem[] {
+  return items
+    .filter((item) => !isExpired(item.savedAt, retentionDays))
+    .map((item) => {
+      const live = liveById.get(item.article.id)
+      return live ? { ...item, article: live } : item
+    })
+}
+
 function readSavedItems(): SavedNewsItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -43,46 +56,37 @@ function isExpired(savedAt: number, retentionDays: number): boolean {
 
 export function useSavedNews(feed: FeedArticle[], retentionDays: number) {
   const [savedItems, setSavedItems] = useState<SavedNewsItem[]>(readSavedItems)
+  const liveById = useMemo(
+    () => new Map(feed.map((article) => [article.id, article])),
+    [feed],
+  )
+  const normalizedSavedItems = useMemo(
+    () => normalizeSavedItems(savedItems, retentionDays, liveById),
+    [liveById, retentionDays, savedItems],
+  )
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedItems))
-  }, [savedItems])
-
-  useEffect(() => {
-    // Apply expiration window whenever retention changes.
-    setSavedItems((prev) =>
-      prev.filter((item) => !isExpired(item.savedAt, retentionDays)),
-    )
-  }, [retentionDays])
-
-  useEffect(() => {
-    // Keep saved article details fresh if the same id appears in the latest feed.
-    if (feed.length === 0) return
-    const byId = new Map(feed.map((article) => [article.id, article]))
-    setSavedItems((prev) =>
-      prev.map((item) => {
-        const live = byId.get(item.article.id)
-        return live ? { ...item, article: live } : item
-      }),
-    )
-  }, [feed])
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedSavedItems))
+  }, [normalizedSavedItems])
 
   const savedIds = useMemo(
-    () => savedItems.map((item) => item.article.id),
-    [savedItems],
+    () => normalizedSavedItems.map((item) => item.article.id),
+    [normalizedSavedItems],
   )
   const savedSet = useMemo(() => new Set(savedIds), [savedIds])
 
   const savedArticles = useMemo(
-    () => savedItems.map((item) => item.article),
-    [savedItems],
+    () => normalizedSavedItems.map((item) => item.article),
+    [normalizedSavedItems],
   )
 
   const isSaved = (id: string) => savedSet.has(id)
 
   const toggleSaved = (article: FeedArticle) => {
     setSavedItems((prev) =>
-      prev.some((item) => item.article.id === article.id)
+      normalizeSavedItems(prev, retentionDays, liveById).some(
+        (item) => item.article.id === article.id,
+      )
         ? prev.filter((item) => item.article.id !== article.id)
         : [{ article, savedAt: Date.now() }, ...prev],
     )

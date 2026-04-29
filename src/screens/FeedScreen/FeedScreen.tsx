@@ -13,7 +13,8 @@ import { useRelevance } from '../../hooks/useRelevance'
 import { useReminders } from '../../hooks/useReminders'
 import { useSavedNews } from '../../hooks/useSavedNews'
 import { useTheme } from '../../hooks/useTheme'
-import { newsService } from '../../services/newsService'
+import { trackEvent } from '../../lib/telemetry'
+import { NewsServiceError, newsService } from '../../services/newsService'
 import type { NavTabId } from '../../types/nav'
 import { ArticleDetailsScreen } from '../ArticleDetailsScreen/ArticleDetailsScreen'
 import { ProfileScreen } from '../ProfileScreen/ProfileScreen'
@@ -54,12 +55,17 @@ export function FeedScreen() {
   })
   const [feed, setFeed] = useState<FeedArticle[]>([])
   const [loading, setLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [lastLoadedAt, setLastLoadedAt] = useState<number | null>(null)
+  const [manualReloadToken, setManualReloadToken] = useState(0)
   const [communityRender, setCommunityRender] = useState<CommunityRenderItem[]>(
     [],
   )
   const communityBatchTimerRef = useRef<number | null>(null)
   const communityFinalizeTimerRef = useRef<number | null>(null)
   const breakingViewportRef = useRef<HTMLDivElement | null>(null)
+  const loadRequestIdRef = useRef(0)
 
   const { settings, setSavedRetentionDays, setRefreshIntervalMinutes } =
     useNewsSettings()
@@ -77,25 +83,60 @@ export function FeedScreen() {
   /* Backend-ready: feed is loaded through a service abstraction. */
   useEffect(() => {
     let mounted = true
-    const loadFeed = async (showLoading: boolean) => {
+    const loadFeed = async (showLoading: boolean, reason: string) => {
+      const requestId = ++loadRequestIdRef.current
+      const startedAt = performance.now()
       if (showLoading) setLoading(true)
-      const items = await newsService.getFeed()
-      if (!mounted) return
-      setFeed(items)
-      if (showLoading) setLoading(false)
+      else setIsRefreshing(true)
+
+      try {
+        const items = await newsService.getFeed()
+        if (!mounted || requestId !== loadRequestIdRef.current) return
+        setFeed(items)
+        setLoadError(null)
+        setLastLoadedAt(Date.now())
+        trackEvent('feed.load.success', 'info', {
+          reason,
+          durationMs: Math.round(performance.now() - startedAt),
+          itemCount: items.length,
+        })
+      } catch (error) {
+        if (!mounted || requestId !== loadRequestIdRef.current) return
+        const message =
+          error instanceof NewsServiceError
+            ? error.code === 'TIMEOUT'
+              ? 'Feed request timed out. Please try again.'
+              : 'Feed is temporarily unavailable. Please retry.'
+            : 'Unable to refresh feed right now.'
+        setLoadError(message)
+        trackEvent('feed.load.error', 'warn', {
+          reason,
+          durationMs: Math.round(performance.now() - startedAt),
+          message: error instanceof Error ? error.message : String(error),
+        })
+      } finally {
+        if (mounted && requestId === loadRequestIdRef.current) {
+          if (showLoading) setLoading(false)
+          else setIsRefreshing(false)
+        }
+      }
     }
 
-    loadFeed(true)
+    void loadFeed(true, 'initial')
 
     const refreshMs = settings.refreshIntervalMinutes * 60 * 1000
     const interval = window.setInterval(() => {
-      loadFeed(false)
+      void loadFeed(false, 'interval')
     }, refreshMs)
 
     const onVisible = () => {
-      if (document.visibilityState === 'visible') loadFeed(false)
+      if (document.visibilityState === 'visible') {
+        void loadFeed(false, 'visibility')
+      }
     }
-    const onFocus = () => loadFeed(false)
+    const onFocus = () => {
+      void loadFeed(false, 'focus')
+    }
     document.addEventListener('visibilitychange', onVisible)
     window.addEventListener('focus', onFocus)
 
@@ -105,7 +146,7 @@ export function FeedScreen() {
       document.removeEventListener('visibilitychange', onVisible)
       window.removeEventListener('focus', onFocus)
     }
-  }, [settings.refreshIntervalMinutes])
+  }, [manualReloadToken, settings.refreshIntervalMinutes])
 
   /* Featured article is only surfaced in the All feed */
   const featuredArticle = useMemo(
@@ -148,6 +189,10 @@ export function FeedScreen() {
         : articles
     return withFeatured.slice(0, 5)
   }, [articles, featuredArticle, searchQuery])
+  const activeBreakingIndex = useMemo(() => {
+    if (breakingNews.length === 0) return 0
+    return Math.min(breakingIndex, breakingNews.length - 1)
+  }, [breakingIndex, breakingNews.length])
 
   const recommendationArticles = useMemo(() => {
     const breakingIds = new Set(breakingNews.map((article) => article.id))
@@ -160,10 +205,6 @@ export function FeedScreen() {
       ? base
       : base.filter((article) => article.categoryId === feedCategory)
   }, [articles, breakingNews, featuredArticle, feedCategory, searchQuery])
-
-  useEffect(() => {
-    setBreakingIndex(0)
-  }, [searchQuery, feed])
 
   useEffect(() => {
     const viewport = breakingViewportRef.current
@@ -330,6 +371,10 @@ export function FeedScreen() {
           >
             {loading
               ? 'Loading stories…'
+              : isRefreshing
+                ? 'Refreshing stories…'
+                : loadError
+                  ? `Feed issue: ${loadError}`
               : articles.length === 0
                 ? 'No stories in this category.'
                 : `${articles.length} ${articles.length === 1 ? 'story' : 'stories'} in feed.`}
@@ -415,12 +460,38 @@ export function FeedScreen() {
           ) : (
             /* ── Live feed ────────────────────────────── */
             <>
+              {loadError && articles.length > 0 && (
+                <section className="feed-alert" role="status" aria-live="polite">
+                  <p className="feed-alert__text">{loadError}</p>
+                  <button
+                    type="button"
+                    className="feed-alert__retry"
+                    onClick={() => setManualReloadToken((prev) => prev + 1)}
+                  >
+                    Retry now
+                  </button>
+                </section>
+              )}
               {articles.length === 0 ? (
-                <p className="feed-empty">
-                  {searchQuery
-                    ? `No stories matching "${searchQuery}".`
-                    : 'No stories in this category yet.'}
-                </p>
+                loadError ? (
+                  <section className="feed-empty feed-empty--error" role="alert">
+                    <p className="feed-empty__title">Could not load stories</p>
+                    <p className="feed-empty__text">{loadError}</p>
+                    <button
+                      type="button"
+                      className="feed-empty__retry"
+                      onClick={() => setManualReloadToken((prev) => prev + 1)}
+                    >
+                      Retry feed
+                    </button>
+                  </section>
+                ) : (
+                  <p className="feed-empty">
+                    {searchQuery
+                      ? `No stories matching "${searchQuery}".`
+                      : 'No stories in this category yet.'}
+                  </p>
+                )
               ) : (
                 <>
                   {breakingNews.length > 0 && (
@@ -458,7 +529,7 @@ export function FeedScreen() {
                         <div ref={breakingViewportRef} className="breaking-carousel__viewport">
                           <div
                             className="breaking-carousel__track"
-                            style={{ transform: `translateX(-${breakingIndex * breakingStepPx}px)` }}
+                            style={{ transform: `translateX(-${activeBreakingIndex * breakingStepPx}px)` }}
                           >
                             {breakingNews.map((article) => (
                               <article
@@ -524,7 +595,7 @@ export function FeedScreen() {
                               type="button"
                               className={`breaking-carousel__dot${index === breakingIndex ? ' breaking-carousel__dot--active' : ''}`}
                               aria-label={`Show breaking story ${index + 1}`}
-                              aria-pressed={index === breakingIndex}
+                              aria-pressed={index === activeBreakingIndex}
                               onClick={() => setBreakingIndex(index)}
                             />
                           ))}
@@ -575,6 +646,7 @@ export function FeedScreen() {
         )}
         {tab === 'reminders' && (
           <RemindersScreen
+            key={`reminders-${reminderArticle?.id ?? 'none'}`}
             feed={feed}
             prefillArticle={reminderArticle}
             onPrefillConsumed={() => setReminderArticle(null)}
@@ -612,6 +684,11 @@ export function FeedScreen() {
             setSelectedArticle(null)
           }}
         />
+      )}
+      {tab === 'feed' && lastLoadedAt && (
+        <p className="feed-last-updated" aria-live="polite">
+          Updated {new Date(lastLoadedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </p>
       )}
     </div>
   )

@@ -30,7 +30,9 @@ function readReactions(): Set<string> {
   try {
     const arr = JSON.parse(localStorage.getItem(REACTIONS_KEY) ?? '[]')
     if (Array.isArray(arr)) return new Set(arr as string[])
-  } catch {}
+  } catch {
+    return new Set()
+  }
   return new Set()
 }
 
@@ -38,7 +40,9 @@ function readBudget(): BudgetStore {
   try {
     const parsed = JSON.parse(localStorage.getItem(BUDGET_KEY) ?? '') as BudgetStore
     if (parsed.date === todayISO()) return parsed
-  } catch {}
+  } catch {
+    return { remaining: DAILY_LIMIT, date: todayISO() }
+  }
   return { remaining: DAILY_LIMIT, date: todayISO() }
 }
 
@@ -52,18 +56,6 @@ export function useRelevance(feed: FeedArticle[]) {
   const budgetRef    = useRef(budget)
   useEffect(() => { reactionsRef.current = reactions }, [reactions])
   useEffect(() => { budgetRef.current    = budget    }, [budget])
-
-  // Seed missing article scores
-  useEffect(() => {
-    if (!feed.length) return
-    setScores((prev) => {
-      const next = { ...prev }
-      for (const a of feed) {
-        if (typeof next[a.id] !== 'number') next[a.id] = 0
-      }
-      return next
-    })
-  }, [feed])
 
   // Persist
   useEffect(() => { localStorage.setItem(SCORES_KEY,    JSON.stringify(scores))          }, [scores])

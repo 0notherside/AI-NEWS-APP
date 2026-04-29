@@ -22,12 +22,16 @@ import './ProfileScreen.css'
 const INTEREST_CHIPS = CATEGORY_CHIPS.filter((c) => c.id !== 'all')
 
 const INTERESTS_KEY = 'ai-pulse-interests'
+const AVATAR_MAX_BYTES = 1_500_000
+const AVATAR_ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 
 function readInterests(): Set<string> {
   try {
     const arr = JSON.parse(localStorage.getItem(INTERESTS_KEY) ?? '[]')
     if (Array.isArray(arr) && arr.length > 0) return new Set(arr as string[])
-  } catch {}
+  } catch {
+    return new Set(INTEREST_CHIPS.map((c) => c.id))
+  }
   return new Set(INTEREST_CHIPS.map((c) => c.id))
 }
 
@@ -67,7 +71,11 @@ export function ProfileScreen({
   const toggleInterest = (id: string) => {
     setSelectedInterests((prev) => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
       localStorage.setItem(INTERESTS_KEY, JSON.stringify([...next]))
       return next
     })
@@ -78,6 +86,10 @@ export function ProfileScreen({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    if (!AVATAR_ALLOWED.has(file.type) || file.size > AVATAR_MAX_BYTES) {
+      e.target.value = ''
+      return
+    }
     const reader = new FileReader()
     reader.onload = (ev) => {
       const result = ev.target?.result
