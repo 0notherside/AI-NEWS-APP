@@ -51,7 +51,7 @@ export function Header({
             aria-pressed={searchActive}
             onClick={onSearchClick}
           >
-            <Search size={17} strokeWidth={2} aria-hidden />
+            <Search size={20} strokeWidth={2} aria-hidden />
           </button>
           <button
             type="button"
@@ -59,7 +59,7 @@ export function Header({
             aria-label="Open profile settings"
             onClick={onProfileClick}
           >
-            <Settings size={17} strokeWidth={1.8} aria-hidden />
+            <Settings size={20} strokeWidth={1.85} aria-hidden />
           </button>
         </div>
       </div>

@@ -150,7 +150,7 @@ export function ProfileScreen({
             aria-label="Change profile photo"
             onClick={handleAvatarClick}
           >
-            <Camera size={15} strokeWidth={2} aria-hidden />
+            <Camera size={18} strokeWidth={2} aria-hidden />
           </button>
           {/* Remove photo button — only shown when a photo is set */}
           {profile.avatarDataUrl && (
@@ -160,7 +160,7 @@ export function ProfileScreen({
               aria-label="Remove profile photo"
               onClick={() => onUpdateAvatar(null)}
             >
-              <X size={12} strokeWidth={2.5} aria-hidden />
+              <X size={16} strokeWidth={2.5} aria-hidden />
             </button>
           )}
         </div>
@@ -194,7 +194,7 @@ export function ProfileScreen({
               aria-label="Save name"
               onClick={saveName}
             >
-              <Check size={16} strokeWidth={2.5} aria-hidden />
+              <Check size={18} strokeWidth={2.5} aria-hidden />
             </button>
             <button
               type="button"
@@ -202,7 +202,7 @@ export function ProfileScreen({
               aria-label="Cancel editing"
               onClick={cancelEditing}
             >
-              <X size={16} strokeWidth={2.5} aria-hidden />
+              <X size={18} strokeWidth={2.5} aria-hidden />
             </button>
           </div>
         ) : (
@@ -214,7 +214,7 @@ export function ProfileScreen({
               aria-label="Edit name"
               onClick={startEditing}
             >
-              <Pencil size={14} strokeWidth={2} aria-hidden />
+              <Pencil size={18} strokeWidth={2} aria-hidden />
             </button>
           </div>
         )}

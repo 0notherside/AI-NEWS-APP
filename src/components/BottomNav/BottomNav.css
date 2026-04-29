@@ -21,7 +21,7 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  min-height: 44px;
+  min-height: var(--touch-target);
   padding: 4px 0 2px;
   border: none;
   background: transparent;

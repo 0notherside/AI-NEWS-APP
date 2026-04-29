@@ -17,7 +17,7 @@
 
 /* Inline variant — sits in the header next to the gear button */
 .search-bar--inline {
-  min-height: 38px;
+  min-height: var(--touch-target);
   border-radius: 12px;
   max-width: 164px;
   flex: 1;
@@ -40,14 +40,15 @@
 }
 
 .search-bar--inline .search-bar__input {
-  height: 38px;
+  min-height: var(--touch-target);
+  height: auto;
   font-size: var(--font-size-sm);
   padding-left: 12px;
 }
 
 .search-bar--inline .search-bar__icon {
-  width: 36px;
-  height: 36px;
+  width: var(--touch-target);
+  height: var(--touch-target);
 }
 
 .search-bar__input::placeholder {
@@ -72,9 +73,9 @@
 /* Clear button — right side when text present */
 .search-bar__clear {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  margin-right: 7px;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  margin-right: 4px;
   display: grid;
   place-items: center;
   border: none;
@@ -82,6 +83,7 @@
   background: var(--color-border-subtle);
   color: var(--color-text-muted);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition: background 100ms ease, color 100ms ease;
 }
 

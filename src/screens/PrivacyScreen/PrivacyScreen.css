@@ -29,10 +29,13 @@
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   font-weight: 600;
-  padding: 0;
+  min-height: var(--touch-target);
+  padding: 6px 10px 6px 0;
+  margin: -6px 0 6px -2px;
   cursor: pointer;
-  margin-bottom: 6px;
   width: fit-content;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 8px;
 }
 
 .privacy__back:focus-visible {

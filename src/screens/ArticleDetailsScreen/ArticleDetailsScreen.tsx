@@ -43,7 +43,7 @@ export function ArticleDetailsScreen({
             aria-label="Back"
             onClick={onBack}
           >
-            <ArrowLeft size={18} strokeWidth={2.2} aria-hidden />
+            <ArrowLeft size={20} strokeWidth={2.2} aria-hidden />
           </button>
 
           <button
@@ -53,7 +53,7 @@ export function ArticleDetailsScreen({
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen(true)}
           >
-            <AlignJustify size={17} strokeWidth={2} aria-hidden />
+            <AlignJustify size={20} strokeWidth={2} aria-hidden />
           </button>
         </div>
       </div>

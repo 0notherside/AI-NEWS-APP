@@ -59,10 +59,10 @@
 /* Camera badge — bottom-right of avatar */
 .profile__avatar-edit {
   position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 30px;
-  height: 30px;
+  bottom: 0;
+  right: 0;
+  width: var(--touch-target);
+  height: var(--touch-target);
   border-radius: 50%;
   border: 2px solid var(--color-bg);
   background: var(--accent-blue-start);
@@ -70,6 +70,7 @@
   display: grid;
   place-items: center;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition: background 120ms ease;
 }
 
@@ -85,10 +86,10 @@
 /* Remove photo badge — top-right of avatar */
 .profile__avatar-remove {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 22px;
-  height: 22px;
+  top: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 2px solid var(--color-bg);
   background: rgba(239, 68, 68, 0.85);
@@ -96,6 +97,7 @@
   display: grid;
   place-items: center;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition: background 120ms ease;
 }
 
@@ -132,14 +134,15 @@
 .profile__name-pencil {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: var(--touch-target);
+  height: var(--touch-target);
   border: none;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.07);
   color: var(--color-text-muted);
   cursor: pointer;
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
   transition: background 120ms ease, color 120ms ease;
 }
 
@@ -179,14 +182,15 @@
 }
 
 .profile__name-btn {
-  width: 32px;
-  height: 32px;
+  width: var(--touch-target);
+  height: var(--touch-target);
   border-radius: 50%;
   border: none;
   display: grid;
   place-items: center;
   cursor: pointer;
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
   transition: background 120ms ease;
 }
 
@@ -305,7 +309,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 38px;
+  min-height: var(--touch-target);
   padding: 0 14px;
   border-radius: 12px;
   border: 1.5px solid var(--color-chip-border);
@@ -315,6 +319,7 @@
   font-weight: 600;
   color: var(--color-text-muted);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition: border-color 140ms ease, background 140ms ease,
               color 140ms ease, transform 100ms ease;
 }
@@ -485,7 +490,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  min-height: var(--touch-target);
+  padding: 0 14px;
   border-radius: var(--radius-chip);
   border: 1px solid var(--color-chip-border);
   background: transparent;
@@ -494,6 +500,7 @@
   font-weight: 500;
   color: var(--color-text-muted);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
 }
 

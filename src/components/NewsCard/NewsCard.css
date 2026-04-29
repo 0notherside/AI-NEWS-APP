@@ -75,20 +75,23 @@
 .news-card__actions {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 2px;
   background: rgba(0, 0, 0, 0.38);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 999px;
-  padding: 3px;
+  padding: 4px;
   /* Must be above stretched-link */
   position: relative;
   z-index: 2;
 }
 
+/* 44×44px minimum — same as --touch-target for reliable taps on phones */
 .news-card__icon-btn {
-  width: 36px;
-  height: 36px;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
   display: grid;
   place-items: center;
   padding: 0;
@@ -97,6 +100,7 @@
   color: rgba(255, 255, 255, 0.88);
   cursor: pointer;
   border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
   transition: background 100ms ease-out, color 100ms ease-out;
 }
 

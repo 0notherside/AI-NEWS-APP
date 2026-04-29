@@ -17,7 +17,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 40px;
+  min-height: var(--touch-target);
   padding: 0 16px;
   border-radius: 12px;
   border: 1.5px solid var(--color-chip-border);
@@ -26,6 +26,7 @@
   font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   color: var(--color-text-muted);
   white-space: nowrap;
   transition: border-color 150ms ease, color 150ms ease, background 150ms ease;

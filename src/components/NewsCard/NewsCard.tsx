@@ -82,7 +82,7 @@ export function NewsCard({
               aria-pressed={isReminded}
               onClick={(e) => { e.stopPropagation(); onSetReminder?.(article) }}
             >
-              <Bell size={17} strokeWidth={1.8} aria-hidden />
+              <Bell size={20} strokeWidth={1.85} aria-hidden />
             </button>
             <button
               type="button"
@@ -91,7 +91,7 @@ export function NewsCard({
               aria-pressed={isSaved}
               onClick={(e) => { e.stopPropagation(); onToggleSave?.(article) }}
             >
-              <Bookmark size={17} strokeWidth={1.8} aria-hidden />
+              <Bookmark size={20} strokeWidth={1.85} aria-hidden />
             </button>
             <button
               type="button"
@@ -99,7 +99,7 @@ export function NewsCard({
               aria-label="Share article"
               onClick={(e) => { e.stopPropagation(); void shareArticle(article) }}
             >
-              <Share2 size={17} strokeWidth={1.8} aria-hidden />
+              <Share2 size={20} strokeWidth={1.85} aria-hidden />
             </button>
           </div>
         </div>
