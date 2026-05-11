@@ -19,10 +19,12 @@ body {
   min-height: 100dvh;
   font-family: var(--font-sans);
   font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
   line-height: var(--line-height-body);
   background: var(--color-outer-bg);
   color: var(--color-text);
-  /* PERF FLAG: font loaded via <link> in index.html with display=swap — OK */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* ── Root shell ────────────────────────────────────── */

@@ -2,23 +2,23 @@
   position: relative;
   margin: 0 var(--space-page) 16px;
   background: var(--color-card);
-  border-radius: 20px;
+  border-radius: var(--radius-card);
   border: none;
   box-shadow: var(--shadow-card);
   overflow: hidden;
-  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+  transition: transform 120ms ease, box-shadow 120ms ease;
 }
 
 .news-card--pressed {
-  transform: scale(0.985);
+  transform: scale(0.984);
   box-shadow: none;
 }
 
-/* ── Image container — position:relative anchors the overlay ── */
+/* ── Full-width image ──────────────────────────────────── */
 .news-card__img-wrap {
   position: relative;
   width: 100%;
-  height: 196px;
+  height: 192px;
   overflow: hidden;
   background: var(--color-border-subtle);
 }
@@ -28,14 +28,12 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 300ms ease-out;
+  transition: transform 300ms ease;
 }
 
-.news-card:hover .news-card__img {
-  transform: scale(1.03);
-}
+.news-card:hover .news-card__img { transform: scale(1.03); }
 
-/* ── Bottom overlay: chip left + actions right ─────── */
+/* ── Image overlay: chip left + actions right ────────── */
 .news-card__img-overlay {
   position: absolute;
   bottom: 0;
@@ -46,90 +44,75 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 8px;
-  /* Subtle gradient so the overlay elements read against any photo */
-  background: linear-gradient(to top, rgba(0,0,0,0.38) 0%, transparent 100%);
-  /* Overlay must sit above the stretched-link ::after */
-  position: absolute;
+  background: linear-gradient(to top, rgba(0,0,0,0.42) 0%, transparent 100%);
   z-index: 1;
 }
 
-/* ── Category chip — filled solid colour, bottom-left ── */
+/* ── Category chip — solid filled ───────────────────── */
 .news-card__chip {
   display: inline-flex;
   align-items: center;
   height: 26px;
   padding: 0 11px;
   border-radius: var(--radius-chip);
+  font-family: var(--font-sans);
   font-size: var(--font-size-xs);
-  font-weight: 700;
-  letter-spacing: 0.07em;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #fff;
-  background: var(--tag-color, var(--accent-blue-start));
-  /* No border — solid filled like the breaking news pill */
+  background: var(--tag-color, var(--accent));
   border: none;
   white-space: nowrap;
 }
 
-/* ── Action buttons group — frosted pill, bottom-right ── */
+/* ── Action buttons — frosted pill ──────────────────── */
 .news-card__actions {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0;
   background: rgba(0, 0, 0, 0.38);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-radius: 999px;
-  padding: 4px;
-  /* Must be above stretched-link */
+  border-radius: var(--radius-chip);
+  padding: 3px;
   position: relative;
   z-index: 2;
 }
 
-/* 44×44px minimum — same as --touch-target for reliable taps on phones */
 .news-card__icon-btn {
-  width: var(--touch-target);
-  height: var(--touch-target);
-  min-width: var(--touch-target);
-  min-height: var(--touch-target);
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
-  padding: 0;
   border: none;
   background: none;
-  color: rgba(255, 255, 255, 0.88);
+  color: rgba(255,255,255,0.88);
   cursor: pointer;
   border-radius: 50%;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 100ms ease-out, color 100ms ease-out;
+  transition: background 100ms ease, color 100ms ease;
 }
 
-.news-card__icon-btn:hover {
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
-}
-
+.news-card__icon-btn:hover  { background: rgba(255,255,255,0.18); color: #fff; }
 .news-card__icon-btn:focus-visible {
   outline: var(--focus-outline);
   outline-offset: var(--focus-offset);
 }
 
-.news-card__icon-btn--active {
-  color: #60c0ff;
-}
+.news-card__icon-btn--active { color: #60c0ff; }
 
-/* ── Text body ─────────────────────────────────────── */
+/* ── Text body ───────────────────────────────────────── */
 .news-card__body {
-  padding: 14px 16px 14px;
+  padding: 14px 16px 12px;
 }
 
-/* ── Title ─────────────────────────────────────────── */
 .news-card__title {
   margin: 0 0 8px;
+  font-family: var(--font-sans);
   font-size: var(--font-size-h1);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   line-height: var(--line-height-snug);
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
   color: var(--color-text);
 }
 
@@ -146,12 +129,11 @@
   cursor: pointer;
 }
 
-/* Stretched link covers the full card */
 .news-card__title-btn::after {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 20px;
+  border-radius: var(--radius-card);
   z-index: 0;
 }
 
@@ -160,12 +142,9 @@
   outline-offset: 2px;
   border-radius: 4px;
 }
+.news-card__title-btn:focus-visible::after { display: none; }
 
-.news-card__title-btn:focus-visible::after {
-  display: none;
-}
-
-/* ── Byline row: meta left, fire right ─────────────── */
+/* ── Byline ───────────────────────────────────────────── */
 .news-card__byline-row {
   display: flex;
   align-items: center;
@@ -175,8 +154,9 @@
 
 .news-card__byline {
   margin: 0;
+  font-family: var(--font-sans);
   font-size: var(--font-size-sm);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-muted);
   display: flex;
   align-items: center;
@@ -185,30 +165,24 @@
   line-height: 1.4;
 }
 
-.news-card__sep {
-  opacity: 0.35;
-}
+.news-card__sep { opacity: 0.35; }
 
-/* ── Fire reaction button (44px min — comfortable on touch screens) ── */
+/* ── Fire reaction button ─────────────────────────────── */
 .news-card__fire-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: var(--touch-target);
-  min-width: var(--touch-target);
-  padding: 0 14px;
+  gap: 4px;
+  height: 26px;
+  padding: 0 9px;
   border-radius: var(--radius-chip);
-  flex-shrink: 0;
   border: 1.5px solid var(--color-chip-border);
   background: transparent;
   font-family: var(--font-sans);
-  font-size: var(--font-size-body);
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-muted);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  /* Must sit above the stretched-link */
+  flex-shrink: 0;
   position: relative;
   z-index: 1;
   transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
@@ -216,21 +190,18 @@
 
 .news-card__fire-btn:hover {
   border-color: #f97316;
-  background: rgba(249, 115, 22, 0.07);
+  background: rgba(249,115,22,0.07);
   color: #f97316;
 }
 
-.news-card__fire-btn:active {
-  transform: scale(0.94);
-}
+.news-card__fire-btn:active { transform: scale(0.94); }
 
 .news-card__fire-btn--lit {
-  border-color: rgba(249, 115, 22, 0.55);
-  background: rgba(249, 115, 22, 0.09);
+  border-color: rgba(249,115,22,0.55);
+  background: rgba(249,115,22,0.09);
   color: #f97316;
 }
 
-/* Budget exhausted — muted, non-interactive look */
 .news-card__fire-btn--exhausted {
   opacity: 0.35;
   cursor: not-allowed;
@@ -241,21 +212,11 @@
   outline-offset: var(--focus-offset);
 }
 
-.news-card__fire-emoji {
-  font-size: 1.25rem;
-  line-height: 1;
-}
+.news-card__fire-emoji { font-size: 12px; line-height: 1; }
+.news-card__fire-count { font-variant-numeric: tabular-nums; min-width: 10px; }
 
-.news-card__fire-count {
-  font-variant-numeric: tabular-nums;
-  min-width: 1.25ch;
-}
-
-/* ── Skeleton ──────────────────────────────────────── */
-.news-card--skeleton {
-  pointer-events: none;
-  box-shadow: none;
-}
+/* ── Skeleton ─────────────────────────────────────────── */
+.news-card--skeleton { pointer-events: none; box-shadow: none; }
 
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
@@ -276,18 +237,6 @@
   animation: shimmer 1.4s ease infinite;
 }
 
-.news-card__img-wrap--sk {
-  height: 196px;
-  border-radius: 0;
-}
-
-.news-card__sk-title {
-  height: 20px;
-  width: 90%;
-  margin-bottom: 8px;
-}
-
-.news-card__sk-byline {
-  height: 14px;
-  width: 60%;
-}
+.news-card__img-wrap--sk { height: 192px; border-radius: 0; }
+.news-card__sk-title     { height: 20px; width: 90%; margin-bottom: 8px; }
+.news-card__sk-byline    { height: 14px; width: 60%; }

@@ -61,10 +61,11 @@
 /* ── Headline ─────────────────────────────────────── */
 .hero-card__title {
   margin: 0 0 10px;
+  font-family: var(--font-sans);
   font-size: 1.375rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-black);
   line-height: var(--line-height-snug);
-  letter-spacing: -0.022em;
+  letter-spacing: -0.02em;
   color: #fff;
 }
 

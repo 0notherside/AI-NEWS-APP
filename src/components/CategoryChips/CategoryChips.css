@@ -8,28 +8,26 @@
   -ms-overflow-style: none;
 }
 
-.category-chips::-webkit-scrollbar {
-  display: none;
-}
+.category-chips::-webkit-scrollbar { display: none; }
 
 .category-chips__chip {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: var(--touch-target);
+  height: 38px;
   padding: 0 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-chip);
   border: 1.5px solid var(--color-chip-border);
   background: transparent;
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
   color: var(--color-text-muted);
   white-space: nowrap;
-  transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease,
+              transform 100ms ease;
 }
 
 .category-chips__chip:hover {
@@ -44,20 +42,21 @@
   outline-offset: var(--focus-offset);
 }
 
-/* Active: white solid fill, dark text */
+/* Active — dark fill matching GoRead reference */
 .category-chips__chip--active {
-  background: #ffffff;
-  border-color: #ffffff;
-  color: #000000;
-  font-weight: 700;
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-bg);
+  font-weight: var(--font-weight-bold);
 }
 
 .category-chips__chip--active:hover {
-  background: #f0f0f0;
-  border-color: #f0f0f0;
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-bg);
 }
 
 .category-chips__fire {
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1;
 }

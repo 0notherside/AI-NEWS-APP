@@ -102,8 +102,9 @@
 
 .feed-section__title {
   margin: 0;
+  font-family: var(--font-sans);
   font-size: var(--font-size-display);
-  font-weight: 800;
+  font-weight: var(--font-weight-black);
   line-height: var(--line-height-tight);
   letter-spacing: -0.025em;
   color: var(--color-text);

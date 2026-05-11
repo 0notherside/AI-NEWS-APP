@@ -8,7 +8,7 @@
   display: flex;
   align-items: stretch;
   justify-content: space-around;
-  padding: 10px 0 calc(10px + env(safe-area-inset-bottom, 0px));
+  padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px));
   background: var(--color-nav-bg);
   border-top: 1px solid var(--color-nav-border);
   z-index: 10;
@@ -20,20 +20,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  min-height: var(--touch-target);
-  padding: 4px 0 2px;
+  gap: 4px;
+  min-height: 44px;
+  padding: 4px 6px 2px;
   border: none;
   background: transparent;
   font-family: var(--font-sans);
   cursor: pointer;
-  transition: transform 0.12s ease-out;
+  border-radius: var(--radius-btn);
+  transition: transform 0.12s ease;
 }
 
-.bottom-nav__item:active {
-  transform: scale(0.88);
-}
-
+.bottom-nav__item:active  { transform: scale(0.88); }
 .bottom-nav__item:focus-visible {
   outline: var(--focus-outline);
   outline-offset: var(--focus-offset);
@@ -45,10 +43,10 @@
 }
 
 .bottom-nav__item--active svg {
-  color: var(--color-text);
+  color: var(--accent);
 }
 
-/* Dot indicator under active icon */
+/* Dot indicator */
 .bottom-nav__dot {
   width: 5px;
   height: 5px;
@@ -58,5 +56,5 @@
 }
 
 .bottom-nav__item--active .bottom-nav__dot {
-  background: var(--color-text);
+  background: var(--accent);
 }
