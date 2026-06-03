@@ -184,6 +184,26 @@ Interests behavior:
 - A future "For You" view can rank articles higher when `interest_tags` match selected interests.
 - The global main feed does not remove major articles because of user interests.
 
+## Sharing
+
+Article sharing should work for every feed, community, saved, and detail surface.
+
+Share behavior:
+
+- The share button uses the browser native share sheet when available.
+- If native sharing is unavailable, the app copies a durable article URL to the clipboard.
+- If clipboard access is unavailable, the app opens a share hub fallback.
+- Shared URLs must open the article detail view for signed-out and signed-in users.
+- Shared URLs must not expose private saved board IDs or other user-private state.
+- Shared links should use the public article ID or slug, not a local-only hash that only works on the sender's device.
+
+Shared article page behavior:
+
+- Load article details from public published article data.
+- Show original source, original URL, publish date, title, excerpt, image, and fire count.
+- Let signed-in users save, fire, or manage reminders from the shared article view.
+- Let signed-out users read the public article card and then sign in if they want to save or react.
+
 ## Private Saved Boards
 
 Saved boards are private to each user.
@@ -285,8 +305,29 @@ Migrate the app gradually:
 5. Replace `newsService.getFeed()` with published feed reads.
 6. Replace `useSavedNews` with private boards and saved items.
 7. Replace `useRelevance` with server-backed fire reactions and community rankings.
+8. Replace local-only share URLs with public article detail URLs.
+9. Add session-aware state refresh so user actions stay consistent across app tabs.
 
 Local storage can remain temporarily for anonymous/offline fallback, but authenticated state should prefer Supabase.
+
+## Cross-Tab and Cross-Surface Consistency
+
+User-facing features should behave consistently across bottom navigation tabs and across multiple browser tabs.
+
+App surface consistency:
+
+- Saving an article from Home should immediately show it as saved in Saved, Community, and Article Details.
+- Removing a saved article should update all surfaces that show that article.
+- Spending a fire from Home, Community, or Article Details should update remaining fire count and community score everywhere.
+- Profile interest and settings changes should affect filters/settings without requiring a full reload.
+- Auth state changes should update the whole app when a user signs in or signs out.
+
+Browser tab consistency:
+
+- Supabase auth session changes should be observed by every open browser tab.
+- Server-backed user data should be revalidated after save, fire, profile, settings, and board mutations.
+- Supabase Realtime or a lightweight polling/revalidation strategy should keep fire counts and saved state fresh between open tabs.
+- When browser tabs disagree temporarily, the next server read wins because Supabase is the source of truth.
 
 ## Error Handling
 
@@ -295,6 +336,8 @@ Local storage can remain temporarily for anonymous/offline fallback, but authent
 - If a user has no fire budget remaining, the server returns a clear quota error and the UI shows zero remaining fires.
 - If ingestion fails for one source, the scan continues with other sources and records the failed source.
 - If AI scoring fails, the scan can publish no new articles rather than publishing unreviewed low-confidence items.
+- If sharing fails at every fallback, show a non-blocking error state and leave the user on the current article.
+- If a cross-tab refresh fails, keep the current visible data and retry on focus/visibility change.
 
 ## Testing
 
@@ -307,6 +350,8 @@ Backend tests should cover:
 - Saved item expiration after 30 days.
 - Ingestion dedupe behavior.
 - AI selection validation that selected IDs exist in the candidate set.
+- Public shared article reads for signed-out users.
+- Private board data not leaking through shared article URLs.
 
 Frontend tests should cover:
 
@@ -316,6 +361,10 @@ Frontend tests should cover:
 - Saving/removing articles from private boards.
 - Fire reaction remaining count and quota exhausted state.
 - Community tab ordering from aggregate fire counts.
+- Share button behavior with native share, clipboard fallback, and final fallback.
+- Shared article URL opens the detail view.
+- Saved/fire/profile changes stay consistent when switching app tabs.
+- Auth/session changes and saved/fire updates refresh across multiple browser tabs.
 
 ## Open Implementation Decisions
 
