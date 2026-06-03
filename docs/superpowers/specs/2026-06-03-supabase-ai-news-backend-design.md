@@ -9,6 +9,7 @@ Build a Supabase backend for the AI News app that supports real user accounts, p
 - The app is an AI-curated news reader, not an AI-generated news publisher.
 - Every feed item must come from a real external source and link back to the original URL.
 - AI may classify, rank, score, deduplicate, and summarize source-derived material, but it must not invent article titles, URLs, sources, publish dates, or news content.
+- Preview images and images shown inside article detail views must come from original source metadata or extracted source article assets, not AI-generated replacements.
 - The main feed should initially show the same trusted AI-picked top news to everyone.
 - User interests should power filtering and future "For You" ranking, without hiding important global AI news from the main feed.
 - Saved boards are private to each user.
@@ -144,6 +145,8 @@ Normalized article fields:
 - `published_at`.
 - `excerpt`.
 - `image_url`.
+- `image_source_url`.
+- `image_attribution`.
 - `author`.
 - `language`.
 - `raw_payload`.
@@ -165,6 +168,21 @@ Published feed fields:
 - `published_to_feed_at`.
 
 The AI selection prompt must explicitly forbid invented facts and require item IDs from the collected candidate list.
+
+## Article Images
+
+Article images should be copied from original source metadata or source article assets whenever licensing and technical access allow it.
+
+Image behavior:
+
+- Prefer Open Graph image metadata from the original source page.
+- Fall back to RSS/media image fields when available.
+- Fall back to an extracted in-article image only when it belongs to the original article page.
+- Store the image URL, source page URL, and attribution/source name.
+- Do not use AI-generated images as replacements for real article images.
+- Do not use unrelated stock images for real news items.
+- If no usable source image exists, show a neutral app placeholder that clearly does not pretend to be article media.
+- If hotlinking is unreliable or disallowed, cache only when allowed by the source's terms and store attribution.
 
 ## Feed Behavior
 
