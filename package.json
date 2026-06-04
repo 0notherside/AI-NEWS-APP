@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "network": "vite --host",
+    "test": "node --test tests/feed-screen-category-tabs.test.mjs",
+    "test:e2e": "playwright test tests/cross-functional.spec.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview --base /AI-NEWS-APP/"
@@ -17,6 +19,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.60.0",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { BottomNav } from '../../components/BottomNav/BottomNav'
 import { CategoryChips } from '../../components/CategoryChips/CategoryChips'
 import { Header } from '../../components/Header/Header'
 import { NewsCard } from '../../components/NewsCard/NewsCard'
+import { SaveBoardSheet } from '../../components/SaveBoardSheet/SaveBoardSheet'
 import { SearchBar } from '../../components/SearchBar/SearchBar'
 import type { CategoryId } from '../../data/categories'
 import type { FeedArticle } from '../../data/feed'
@@ -23,12 +24,12 @@ import { SavedBoardsScreen } from '../SavedBoardsScreen/SavedBoardsScreen'
 import './FeedScreen.css'
 
 const SKELETON_COUNT = 3
-const COMMUNITY_MIN_RELEVANCE = 10
+const COMMUNITY_MIN_RELEVANCE = 1
 const COMMUNITY_MAX_POSTS = 15
 const COMMUNITY_REFRESH_BATCH_MS = 1400
 const COMMUNITY_ANIM_MS = 280
-const BREAKING_PEEK_PX = 14
-const BREAKING_GAP_PX = 8
+const BREAKING_GAP_PX = 12
+const BREAKING_ROTATE_MS = 5000
 const DEFAULT_BREAKING_VIEWPORT_PX = 360
 
 type CommunityRenderItem = {
@@ -43,6 +44,7 @@ export function FeedScreen() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [selectedArticle, setSelectedArticle] = useState<FeedArticle | null>(null)
+  const [saveSheetArticle, setSaveSheetArticle] = useState<FeedArticle | null>(null)
   const [reminderArticle, setReminderArticle] = useState<FeedArticle | null>(null)
   const [reminderReturnTab, setReminderReturnTab] = useState<NavTabId>('feed')
   const [breakingIndex, setBreakingIndex] = useState(0)
@@ -51,7 +53,7 @@ export function FeedScreen() {
       typeof window !== 'undefined'
         ? Math.min(window.innerWidth, 430) - 32
         : DEFAULT_BREAKING_VIEWPORT_PX
-    return Math.max(viewportGuess - BREAKING_PEEK_PX * 2 + BREAKING_GAP_PX, 240)
+    return Math.max(viewportGuess + BREAKING_GAP_PX, 240)
   })
   const [feed, setFeed] = useState<FeedArticle[]>([])
   const [loading, setLoading] = useState(true)
@@ -65,20 +67,53 @@ export function FeedScreen() {
   const communityBatchTimerRef = useRef<number | null>(null)
   const communityFinalizeTimerRef = useRef<number | null>(null)
   const breakingViewportRef = useRef<HTMLDivElement | null>(null)
+  const appScrollRef = useRef<HTMLElement | null>(null)
+  const previousScrollTopRef = useRef(0)
+  const previousWindowScrollTopRef = useRef(0)
   const loadRequestIdRef = useRef(0)
 
-  const { settings, setSavedRetentionDays, setRefreshIntervalMinutes } =
-    useNewsSettings()
+  const { settings } = useNewsSettings()
   const { lastOpenedById, markOpened } = useArticleOpens()
   const { theme, setTheme } = useTheme()
   const { profile, updateName, updateAvatar } = useProfile()
-  const { savedIds, savedArticles, isSaved, toggleSaved } = useSavedNews(
-    feed,
-    settings.savedRetentionDays,
-  )
+  const {
+    boards,
+    savedIds,
+    isSaved,
+    isSavedToBoard,
+    saveToBoard,
+    removeFromAll,
+    removeFromBoard,
+    createBoard,
+  } = useSavedNews(feed, settings.savedRetentionDays)
   const { getRelevance, boostRelevance, hasReacted, topRated, reactionsRemaining } = useRelevance(feed)
   const { reminders, addReminder, removeReminder, hasArticleReminder } =
     useReminders(lastOpenedById)
+
+  const closeSearch = useCallback(() => {
+    setSearchOpen(false)
+    setSearchQuery('')
+  }, [])
+
+  const handleFeedScroll = useCallback(() => {
+    const scrollTop = appScrollRef.current?.scrollTop ?? 0
+    const moved = Math.abs(scrollTop - previousScrollTopRef.current) > 8
+    previousScrollTopRef.current = scrollTop
+    if (searchOpen && moved) closeSearch()
+  }, [closeSearch, searchOpen])
+
+  useEffect(() => {
+    if (!searchOpen) return
+    previousWindowScrollTopRef.current = window.scrollY
+    const handleWindowScroll = () => {
+      const scrollTop = window.scrollY
+      const moved = Math.abs(scrollTop - previousWindowScrollTopRef.current) > 8
+      previousWindowScrollTopRef.current = scrollTop
+      if (moved) closeSearch()
+    }
+    window.addEventListener('scroll', handleWindowScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleWindowScroll)
+  }, [closeSearch, searchOpen])
 
   /* Backend-ready: feed is loaded through a service abstraction. */
   useEffect(() => {
@@ -194,6 +229,18 @@ export function FeedScreen() {
     return Math.min(breakingIndex, breakingNews.length - 1)
   }, [breakingIndex, breakingNews.length])
 
+  useEffect(() => {
+    if (tab !== 'feed' || selectedArticle || breakingNews.length <= 1) return
+
+    const interval = window.setInterval(() => {
+      setBreakingIndex((prev) =>
+        prev >= breakingNews.length - 1 ? 0 : prev + 1,
+      )
+    }, BREAKING_ROTATE_MS)
+
+    return () => window.clearInterval(interval)
+  }, [breakingNews.length, selectedArticle, tab])
+
   const recommendationArticles = useMemo(() => {
     const breakingIds = new Set(breakingNews.map((article) => article.id))
     const withFeatured =
@@ -205,6 +252,8 @@ export function FeedScreen() {
       ? base
       : base.filter((article) => article.categoryId === feedCategory)
   }, [articles, breakingNews, featuredArticle, feedCategory, searchQuery])
+  const showTrendingSection =
+    recommendationArticles.length > 0 || feedCategory !== 'all'
 
   useEffect(() => {
     const viewport = breakingViewportRef.current
@@ -212,7 +261,7 @@ export function FeedScreen() {
 
     const updateStep = () => {
       const width = viewport.clientWidth
-      const step = Math.max(width - BREAKING_PEEK_PX * 2 + BREAKING_GAP_PX, 240)
+      const step = Math.max(width + BREAKING_GAP_PX, 240)
       setBreakingStepPx(step)
     }
 
@@ -315,10 +364,8 @@ export function FeedScreen() {
             avatarDataUrl={profile.avatarDataUrl}
             searchActive={searchOpen}
             onSearchClick={() => {
-              setSearchOpen((o) => {
-                if (o) setSearchQuery('')
-                return !o
-              })
+              if (searchOpen) closeSearch()
+              else setSearchOpen(true)
             }}
           />
           {tab === 'feed' && searchOpen && (
@@ -326,6 +373,8 @@ export function FeedScreen() {
               <SearchBar
                 value={searchQuery}
                 onChange={setSearchQuery}
+                autoFocus
+                onInactive={closeSearch}
               />
             </div>
           )}
@@ -351,8 +400,10 @@ export function FeedScreen() {
       )}
 
       <main
+        ref={appScrollRef}
         id="main-content"
         className="app-scroll"
+        onScroll={handleFeedScroll}
         aria-label={
           tab === 'feed'
             ? selectedArticle
@@ -387,7 +438,7 @@ export function FeedScreen() {
               article={selectedArticle}
               onBack={() => setSelectedArticle(null)}
               isSaved={isSaved(selectedArticle.id)}
-              onToggleSave={(a) => toggleSaved(a)}
+              onToggleSave={(a) => setSaveSheetArticle(a)}
               isReminded={hasArticleReminder(selectedArticle.id)}
               onSetReminder={openReminderComposer}
             />
@@ -412,7 +463,7 @@ export function FeedScreen() {
                   <span className="community-empty__icon">🔥</span>
                   <h3 className="community-empty__title">No top stories yet</h3>
                   <p className="community-empty__text">
-                    React to articles in the feed — stories with{' '}
+                    React to articles in the feed - stories with{' '}
                     <strong>{COMMUNITY_MIN_RELEVANCE}+ reactions</strong> appear here.
                   </p>
                 </section>
@@ -439,7 +490,7 @@ export function FeedScreen() {
                           setSelectedArticle(a)
                         }}
                         isSaved={isSaved(item.article.id)}
-                        onToggleSave={(a) => toggleSaved(a)}
+                        onToggleSave={(a) => setSaveSheetArticle(a)}
                         relevance={getRelevance(item.article.id)}
                         userHasReacted={hasReacted(item.article.id)}
                         reactionsRemaining={reactionsRemaining}
@@ -505,9 +556,7 @@ export function FeedScreen() {
                         aria-label="Breaking stories"
                         style={
                           {
-                            '--peek': `${BREAKING_PEEK_PX}px`,
                             '--gap': `${BREAKING_GAP_PX}px`,
-                            '--slide-width': `${Math.max(breakingStepPx - BREAKING_GAP_PX, 0)}px`,
                           } as CSSProperties
                         }
                       >
@@ -604,7 +653,7 @@ export function FeedScreen() {
                     </section>
                   )}
 
-                  {recommendationArticles.length > 0 && (
+                  {showTrendingSection && (
                     <section className="feed-section">
                       <div className="feed-section__header">
                         <h2 className="feed-section__title">Trending Now</h2>
@@ -613,24 +662,28 @@ export function FeedScreen() {
                         active={feedCategory}
                         onChange={setFeedCategory}
                       />
-                      {recommendationArticles.map((article) => (
-                        <NewsCard
-                          key={article.id}
-                          article={article}
-                          onOpen={(a) => {
-                            markOpened(a.id)
-                            setSelectedArticle(a)
-                          }}
-                          isSaved={isSaved(article.id)}
-                          onToggleSave={(a) => toggleSaved(a)}
-                          relevance={getRelevance(article.id)}
-                          userHasReacted={hasReacted(article.id)}
-                          reactionsRemaining={reactionsRemaining}
-                          onBoostRelevance={(a) => boostRelevance(a.id)}
-                          isReminded={hasArticleReminder(article.id)}
-                          onSetReminder={openReminderComposer}
-                        />
-                      ))}
+                      {recommendationArticles.length === 0 ? (
+                        <p className="feed-empty">No stories in this category yet.</p>
+                      ) : (
+                        recommendationArticles.map((article) => (
+                          <NewsCard
+                            key={article.id}
+                            article={article}
+                            onOpen={(a) => {
+                              markOpened(a.id)
+                              setSelectedArticle(a)
+                            }}
+                            isSaved={isSaved(article.id)}
+                            onToggleSave={(a) => setSaveSheetArticle(a)}
+                            relevance={getRelevance(article.id)}
+                            userHasReacted={hasReacted(article.id)}
+                            reactionsRemaining={reactionsRemaining}
+                            onBoostRelevance={(a) => boostRelevance(a.id)}
+                            isReminded={hasArticleReminder(article.id)}
+                            onSetReminder={openReminderComposer}
+                          />
+                        ))
+                      )}
                     </section>
                   )}
                 </>
@@ -640,8 +693,7 @@ export function FeedScreen() {
 
         {tab === 'saved' && (
           <SavedBoardsScreen
-            feed={savedArticles}
-            savedArticleIds={savedIds}
+            boards={boards}
           />
         )}
         {tab === 'reminders' && (
@@ -668,10 +720,6 @@ export function FeedScreen() {
             reminderCount={reminders.length}
             theme={theme}
             onSetTheme={setTheme}
-            savedRetentionDays={settings.savedRetentionDays}
-            onSetSavedRetentionDays={setSavedRetentionDays}
-            refreshIntervalMinutes={settings.refreshIntervalMinutes}
-            onSetRefreshIntervalMinutes={setRefreshIntervalMinutes}
           />
         )}
       </main>
@@ -689,6 +737,18 @@ export function FeedScreen() {
         <p className="feed-last-updated" aria-live="polite">
           Updated {new Date(lastLoadedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </p>
+      )}
+      {saveSheetArticle && (
+        <SaveBoardSheet
+          article={saveSheetArticle}
+          boards={boards}
+          isSavedToBoard={isSavedToBoard}
+          onSaveToBoard={saveToBoard}
+          onRemoveFromBoard={removeFromBoard}
+          onRemoveFromAll={removeFromAll}
+          onCreateBoard={createBoard}
+          onClose={() => setSaveSheetArticle(null)}
+        />
       )}
     </div>
   )

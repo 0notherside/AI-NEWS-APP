@@ -76,6 +76,7 @@
   --color-border-subtle:  #2a2a2a;
   --color-separator:      #1e1e1e;
   --color-chip-border:    #383838;
+  --color-chip-filled:    #262626;
   --color-chip-inactive:  transparent;
 
   /* Nav / header surfaces */
@@ -137,6 +138,7 @@
   --color-border-subtle:  #ebebeb;
   --color-separator:      #f3f3f0;
   --color-chip-border:    #d4d4d0;
+  --color-chip-filled:    #eeeeea;
   --color-chip-inactive:  transparent;
 
   /* Nav / header */

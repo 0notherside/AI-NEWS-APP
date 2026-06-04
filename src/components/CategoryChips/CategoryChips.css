@@ -11,27 +11,31 @@
 .category-chips::-webkit-scrollbar { display: none; }
 
 .category-chips__chip {
-  flex-shrink: 0;
+  --chip-color: var(--accent);
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   height: 38px;
+  min-width: 64px;
   padding: 0 16px;
   border-radius: var(--radius-chip);
-  border: 1.5px solid var(--color-chip-border);
-  background: transparent;
+  border: 1.5px solid color-mix(in srgb, var(--chip-color) 42%, var(--color-chip-border));
+  background: color-mix(in srgb, var(--chip-color) 18%, var(--color-chip-filled));
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  color: var(--color-text-muted);
+  color: color-mix(in srgb, var(--chip-color) 82%, var(--color-text));
   white-space: nowrap;
   transition: border-color 150ms ease, color 150ms ease, background 150ms ease,
               transform 100ms ease;
 }
 
 .category-chips__chip:hover {
-  border-color: var(--color-text-muted);
+  border-color: color-mix(in srgb, var(--chip-color) 72%, var(--color-text));
+  background: color-mix(in srgb, var(--chip-color) 26%, var(--color-chip-filled));
   color: var(--color-text);
 }
 
@@ -42,18 +46,18 @@
   outline-offset: var(--focus-offset);
 }
 
-/* Active — dark fill matching GoRead reference */
 .category-chips__chip--active {
-  background: var(--color-text);
-  border-color: var(--color-text);
-  color: var(--color-bg);
+  background: var(--chip-color);
+  border-color: var(--chip-color);
+  color: #fff;
   font-weight: var(--font-weight-bold);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--chip-color) 24%, transparent);
 }
 
 .category-chips__chip--active:hover {
-  background: var(--color-text);
-  border-color: var(--color-text);
-  color: var(--color-bg);
+  background: var(--chip-color);
+  border-color: var(--chip-color);
+  color: #fff;
 }
 
 .category-chips__fire {

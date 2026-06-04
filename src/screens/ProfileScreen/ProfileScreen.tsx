@@ -7,9 +7,11 @@ import {
   HelpCircle,
   LogOut,
   Mail,
+  Moon,
   Pencil,
   Shield,
   Sparkles,
+  Sun,
   X,
 } from 'lucide-react'
 import type { Profile } from '../../hooks/useProfile'
@@ -43,10 +45,6 @@ interface ProfileScreenProps {
   reminderCount?: number
   theme?: Theme
   onSetTheme?: (t: Theme) => void
-  savedRetentionDays?: number
-  onSetSavedRetentionDays?: (days: number) => void
-  refreshIntervalMinutes?: number
-  onSetRefreshIntervalMinutes?: (minutes: number) => void
 }
 
 export function ProfileScreen({
@@ -57,10 +55,6 @@ export function ProfileScreen({
   reminderCount = 0,
   theme = 'dark',
   onSetTheme,
-  savedRetentionDays = 30,
-  onSetSavedRetentionDays,
-  refreshIntervalMinutes = 5,
-  onSetRefreshIntervalMinutes,
 }: ProfileScreenProps) {
   const [editingName, setEditingName] = useState(false)
   const [draftName, setDraftName] = useState(profile.name)
@@ -254,7 +248,7 @@ export function ProfileScreen({
               key={chip.id}
               type="button"
               className={`interest-pill${active ? ' interest-pill--active' : ''}`}
-              style={{ '--ip-color': meta?.color ?? 'var(--accent-blue-start)' } as React.CSSProperties}
+              style={{ '--ip-color': meta?.color ?? 'var(--accent)' } as React.CSSProperties}
               aria-pressed={active}
               onClick={() => toggleInterest(chip.id)}
             >
@@ -304,26 +298,29 @@ export function ProfileScreen({
         </button>
         <div className="profile__row profile__row--appearance">
           <span className="profile__row-label">Appearance</span>
-          <div className="profile__theme-toggle" role="group" aria-label="Choose appearance">
+          <div
+            className={`profile__theme-slider profile__theme-slider--${theme}`}
+            role="group"
+            aria-label="Choose appearance"
+          >
+            <span className="profile__theme-thumb" aria-hidden />
             <button
               type="button"
-              className={`profile__theme-btn${theme === 'dark' ? ' profile__theme-btn--active' : ''}`}
+              className="profile__theme-option"
+              aria-label="Dark appearance"
               aria-pressed={theme === 'dark'}
               onClick={() => onSetTheme?.('dark')}
             >
-              <span className="profile__theme-swatch profile__theme-swatch--dark" aria-hidden />
-              Dark
-              {theme === 'dark' && <Check size={12} strokeWidth={3} aria-hidden />}
+              <Moon size={17} strokeWidth={2.1} aria-hidden />
             </button>
             <button
               type="button"
-              className={`profile__theme-btn${theme === 'light' ? ' profile__theme-btn--active' : ''}`}
+              className="profile__theme-option"
+              aria-label="Light appearance"
               aria-pressed={theme === 'light'}
               onClick={() => onSetTheme?.('light')}
             >
-              <span className="profile__theme-swatch profile__theme-swatch--light" aria-hidden />
-              Light
-              {theme === 'light' && <Check size={12} strokeWidth={3} aria-hidden />}
+              <Sun size={17} strokeWidth={2.1} aria-hidden />
             </button>
           </div>
         </div>
@@ -335,42 +332,6 @@ export function ProfileScreen({
           <ChevronRight className="profile__row-chevron" size={20} aria-hidden />
         </button>
       </nav>
-
-      <h2 className="profile__section-label">News settings</h2>
-      <section className="profile__card" aria-label="News settings">
-        <div className="profile__row profile__row--setting">
-          <span className="profile__row-label">
-            Saved retention (days)
-          </span>
-          <input
-            type="number"
-            min={1}
-            max={365}
-            className="profile__number-input"
-            value={savedRetentionDays}
-            onChange={(e) =>
-              onSetSavedRetentionDays?.(Number(e.target.value || 30))
-            }
-            aria-label="Saved retention days"
-          />
-        </div>
-        <div className="profile__row profile__row--setting">
-          <span className="profile__row-label">
-            Feed refresh (minutes)
-          </span>
-          <input
-            type="number"
-            min={1}
-            max={60}
-            className="profile__number-input"
-            value={refreshIntervalMinutes}
-            onChange={(e) =>
-              onSetRefreshIntervalMinutes?.(Number(e.target.value || 5))
-            }
-            aria-label="Feed refresh interval"
-          />
-        </div>
-      </section>
 
       {/* ── Support ──────────────────────────────────── */}
       <h2 className="profile__section-label">Support</h2>

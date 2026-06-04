@@ -119,9 +119,8 @@
 
 /* ── Breaking carousel ─────────────────────────────── */
 .breaking-carousel {
-  --peek: 24px;
-  --gap: 10px;
-  --slide-width: calc(100% - (var(--peek) * 2));
+  --slide-width: 100%;
+  --gap: 12px;
   position: relative;
   margin: 0 var(--space-page);
   overflow: hidden;
@@ -136,7 +135,6 @@
   display: flex;
   align-items: stretch;
   gap: var(--gap);
-  padding: 0 var(--peek);
   transition: transform 320ms cubic-bezier(0.25, 0.8, 0.25, 1);
   will-change: transform;
 }
@@ -144,7 +142,7 @@
 /* ── Individual breaking card ──────────────────────── */
 .breaking-card {
   position: relative;
-  flex: 0 0 var(--slide-width);
+  flex: 0 0 100%;
   height: 244px;
   border-radius: 20px;
   overflow: hidden;
@@ -189,7 +187,7 @@
   height: 26px;
   padding: 0 12px;
   border-radius: var(--radius-chip);
-  background: rgba(10, 132, 255, 0.9);
+  background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
   color: #fff;
   font-size: var(--font-size-xs);
   font-weight: 700;
@@ -253,6 +251,7 @@
 }
 
 .breaking-carousel__dot {
+  position: relative;
   width: 7px;
   height: 7px;
   border-radius: 999px;
@@ -260,12 +259,29 @@
   padding: 0;
   cursor: pointer;
   background: var(--color-chip-border);
+  overflow: hidden;
   transition: width 200ms ease, background 200ms ease;
 }
 
 .breaking-carousel__dot--active {
-  width: 20px;
-  background: var(--accent-blue-start);
+  width: 34px;
+  background: color-mix(in srgb, var(--accent) 18%, var(--color-chip-border));
+}
+
+.breaking-carousel__dot--active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: breaking-dot-flow 5000ms linear both;
+}
+
+@keyframes breaking-dot-flow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 /* ── Card list ─────────────────────────────────────── */

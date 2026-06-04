@@ -176,8 +176,7 @@ export function PrivacyScreen({ onBack }: PrivacyScreenProps) {
                 <p className="privacy__row-sub">
                   All data is stored locally on your device with no server-side
                   retention. Data persists until you clear your browser storage or
-                  uninstall the app. Saved article retention can be configured in
-                  Profile → News settings.
+                  uninstall the app.
                 </p>
               </div>
             </div>

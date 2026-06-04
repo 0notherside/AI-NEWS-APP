@@ -5,17 +5,33 @@ interface SearchBarProps {
   value: string
   onChange: (value: string) => void
   variant?: 'default' | 'inline'
+  autoFocus?: boolean
+  onInactive?: () => void
 }
 
-export function SearchBar({ value, onChange, variant = 'default' }: SearchBarProps) {
+export function SearchBar({
+  value,
+  onChange,
+  variant = 'default',
+  autoFocus,
+  onInactive,
+}: SearchBarProps) {
   return (
-    <div className={`search-bar${variant === 'inline' ? ' search-bar--inline' : ''}`}>
+    <div
+      className={`search-bar${variant === 'inline' ? ' search-bar--inline' : ''}`}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget) && value.trim() === '') {
+          onInactive?.()
+        }
+      }}
+    >
       <input
         className="search-bar__input"
         type="search"
         placeholder="Search for news"
         aria-label="Search stories"
         value={value}
+        autoFocus={autoFocus}
         onChange={(e) => onChange(e.target.value)}
       />
       {value.length > 0 ? (

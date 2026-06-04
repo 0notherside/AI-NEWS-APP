@@ -1,13 +1,11 @@
 import { useRef, useState } from 'react'
 import { Bookmark, ChevronDown, ChevronUp, Image, Pencil } from 'lucide-react'
 import type { FeedArticle } from '../../data/feed'
-import { CATEGORY_META } from '../../data/categories'
-import type { ArticleCategoryId } from '../../data/categories'
+import type { SavedBoardView } from '../../hooks/useSavedNews'
 import './SavedBoardsScreen.css'
 
 interface SavedBoardsScreenProps {
-  feed: FeedArticle[]
-  savedArticleIds: string[]
+  boards: SavedBoardView[]
 }
 
 /* ── Per-folder customisation stored in localStorage ─── */
@@ -39,7 +37,7 @@ function saveOrder(o: string[]) {
 /* ── Long-press duration ────────────────────────────── */
 const LONG_PRESS_MS = 480
 
-export function SavedBoardsScreen({ feed, savedArticleIds }: SavedBoardsScreenProps) {
+export function SavedBoardsScreen({ boards }: SavedBoardsScreenProps) {
   const [custom, setCustom]         = useState<AllCustom>(readCustom)
   const [folderOrder, setFolderOrder] = useState<string[]>(readOrder)
   const [menuFolderId, setMenuFolderId] = useState<string | null>(null)
@@ -49,33 +47,26 @@ export function SavedBoardsScreen({ feed, savedArticleIds }: SavedBoardsScreenPr
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const suppressTap = useRef(false)
 
-  const feedById = new Map(feed.map((a) => [a.id, a]))
+  const boardById = new Map(boards.map((board) => [board.id, board]))
+  const savedArticles = Array.from(
+    new Map(
+      boards.flatMap((board) =>
+        board.articles.map((article) => [article.id, article] as const),
+      ),
+    ).values(),
+  )
 
-  const savedArticles = savedArticleIds
-    .map((id) => feedById.get(id))
-    .filter((a): a is FeedArticle => Boolean(a))
-    .reverse()
-
-  /* Group by category */
-  const byCategory = new Map<ArticleCategoryId, FeedArticle[]>()
-  for (const article of savedArticles) {
-    const cat = article.categoryId as ArticleCategoryId
-    if (!byCategory.has(cat)) byCategory.set(cat, [])
-    byCategory.get(cat)!.push(article)
-  }
-
-  /* Build ordered folder list for category folders */
-  const categoryKeys = [...byCategory.keys()]
+  const boardIds = boards.map((board) => board.id)
   const ordered = [
-    ...folderOrder.filter((id) => categoryKeys.includes(id as ArticleCategoryId)),
-    ...categoryKeys.filter((id) => !folderOrder.includes(id)),
+    ...folderOrder.filter((id) => boardIds.includes(id)),
+    ...boardIds.filter((id) => !folderOrder.includes(id)),
   ]
 
   /* ── Helpers ─────────────────────────────────────── */
   const getLabel = (id: string, fallback: string) => custom[id]?.name ?? fallback
   const getCover = (id: string, articles: FeedArticle[]) => {
     const pinned = custom[id]?.coverId
-      ? feedById.get(custom[id].coverId!)
+      ? savedArticles.find((article) => article.id === custom[id].coverId)
       : undefined
     return pinned ?? articles[0] ?? null
   }
@@ -128,7 +119,7 @@ export function SavedBoardsScreen({ feed, savedArticleIds }: SavedBoardsScreenPr
       <section className="saved-boards" aria-label="Saved articles">
         <header className="saved-boards__header">
           <h1 className="saved-boards__title">Saved</h1>
-          <p className="saved-boards__subtitle">Folders appear automatically as you save articles</p>
+          <p className="saved-boards__subtitle">Create boards from the bookmark menu</p>
         </header>
         <div className="saved-boards__empty">
           <div className="saved-boards__empty-icon">
@@ -136,7 +127,7 @@ export function SavedBoardsScreen({ feed, savedArticleIds }: SavedBoardsScreenPr
           </div>
           <h2 className="saved-boards__empty-title">Nothing saved yet</h2>
           <p className="saved-boards__empty-text">
-            Tap the bookmark on any article and it will appear in the matching category folder here.
+            Tap the bookmark on any article and choose or create a board.
           </p>
         </div>
       </section>
@@ -155,7 +146,7 @@ export function SavedBoardsScreen({ feed, savedArticleIds }: SavedBoardsScreenPr
       <header className="saved-boards__header">
         <h1 className="saved-boards__title">Saved</h1>
         <p className="saved-boards__subtitle">
-          {savedArticles.length} article{savedArticles.length !== 1 ? 's' : ''} · hold a folder to customise
+          {savedArticles.length} article{savedArticles.length !== 1 ? 's' : ''} · hold a board to customise
         </p>
       </header>
 
@@ -175,19 +166,19 @@ export function SavedBoardsScreen({ feed, savedArticleIds }: SavedBoardsScreenPr
           cancelPress={cancelPress}
         />
 
-        {/* ── Category folders ─────────────────────── */}
-        {ordered.map((catId, idx) => {
-          const articles = byCategory.get(catId as ArticleCategoryId)!
-          const meta     = CATEGORY_META[catId as ArticleCategoryId]
-          if (!meta) return null
-          const label      = getLabel(catId, meta.label.charAt(0) + meta.label.slice(1).toLowerCase())
-          const coverArticle = getCover(catId, articles)
+        {/* ── User boards ─────────────────────────── */}
+        {ordered.map((boardId, idx) => {
+          const board = boardById.get(boardId)
+          if (!board) return null
+          const articles = board.articles
+          const label = getLabel(boardId, board.name)
+          const coverArticle = getCover(boardId, articles)
           return (
             <PinterestCard
-              key={catId}
-              id={catId}
+              key={boardId}
+              id={boardId}
               label={label}
-              emoji={meta.emoji}
+              emoji="📌"
               count={articles.length}
               articles={articles}
               coverArticle={coverArticle}
@@ -212,7 +203,7 @@ export function SavedBoardsScreen({ feed, savedArticleIds }: SavedBoardsScreenPr
               onClick={() => {
                 const curr = menuFolderId === 'all-saved'
                   ? getLabel('all-saved', 'All Saved')
-                  : getLabel(menuFolderId, CATEGORY_META[menuFolderId as ArticleCategoryId]?.label ?? menuFolderId)
+                  : getLabel(menuFolderId, boardById.get(menuFolderId)?.name ?? menuFolderId)
                 startRename(menuFolderId, curr)
               }}
             >
@@ -291,7 +282,7 @@ export function SavedBoardsScreen({ feed, savedArticleIds }: SavedBoardsScreenPr
             <div className="sb-menu__handle" aria-hidden />
             <p className="sb-rename__label">Choose cover</p>
             <div className="sb-cover-picker__grid">
-              {(coverPicker === 'all-saved' ? savedArticles : byCategory.get(coverPicker as ArticleCategoryId) ?? [])
+              {(coverPicker === 'all-saved' ? savedArticles : boardById.get(coverPicker)?.articles ?? [])
                 .slice(0, 6)
                 .map((article) => (
                   <button
